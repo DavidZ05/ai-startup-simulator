@@ -1,6 +1,11 @@
-export default function MonthlyReport({ report, onClose }) {
-  if (!report) return null
+import type { MonthlyReport as MonthlyReportType } from '../../types/game'
 
+interface MonthlyReportProps {
+  report: MonthlyReportType
+  onClose: () => void
+}
+
+export function MonthlyReport({ report, onClose }: MonthlyReportProps) {
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
       <div className="w-full max-w-lg bg-[#1e1e3a] rounded-2xl border border-slate-700/50 shadow-2xl overflow-hidden animate-fade-in">

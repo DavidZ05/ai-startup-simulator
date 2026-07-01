@@ -1,15 +1,17 @@
+import { useGameContext } from '../../context/GameContext'
+import { INDUSTRIES } from '../../config/decisions'
+import { GAME_CONFIG } from '../../config/constants'
+import type { Company } from '../../types/game'
 import { useState } from 'react'
-import { INDUSTRIES, INITIAL_COMPANY } from '../game/decisions.js'
 
-export default function CreateCompany({ onStart }) {
+export function CreateCompany() {
+  const { dispatch } = useGameContext()
+  const [step, setStep] = useState(1)
   const [company, setCompany] = useState({
     name: '',
     industry: '',
-    funds: INITIAL_COMPANY.funds,
     targetUsers: '',
   })
-
-  const [step, setStep] = useState(1)
 
   const canProceed = step === 1
     ? company.name.length >= 2
@@ -19,12 +21,24 @@ export default function CreateCompany({ onStart }) {
 
   const handleStart = () => {
     const selectedIndustry = INDUSTRIES.find(i => i.id === company.industry)
-    onStart({
-      ...INITIAL_COMPANY,
+    const newCompany: Company = {
       name: company.name,
-      industry: selectedIndustry.name,
+      industry: selectedIndustry?.name || company.industry,
       targetUsers: company.targetUsers,
-    })
+      funds: GAME_CONFIG.INITIAL_FUNDS,
+      users: GAME_CONFIG.INITIAL_USERS,
+      revenue: 0,
+      teamMorale: GAME_CONFIG.INITIAL_MORALE,
+      product: GAME_CONFIG.INITIAL_PRODUCT,
+      marketHeat: GAME_CONFIG.INITIAL_HEAT,
+      competition: GAME_CONFIG.INITIAL_COMPETITION,
+      burnRate: GAME_CONFIG.INITIAL_BURN_RATE,
+      month: 1,
+      maxDecisions: GAME_CONFIG.MAX_DECISIONS_PER_ROUND,
+      fundraisingCount: 0,
+      cooldowns: {},
+    }
+    dispatch({ type: 'START_GAME', company: newCompany })
   }
 
   return (
@@ -115,18 +129,18 @@ export default function CreateCompany({ onStart }) {
               <div className="bg-[#12122a] rounded-xl p-6 border border-slate-600">
                 <div className="text-center mb-6">
                   <div className="text-5xl font-black text-emerald-400 mb-2">
-                    ${INITIAL_COMPANY.funds.toLocaleString()}
+                    ${GAME_CONFIG.INITIAL_FUNDS.toLocaleString()}
                   </div>
                   <p className="text-slate-400">Seed Capital</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="bg-slate-800/50 rounded-lg p-3">
                     <div className="text-slate-400">Monthly Burn</div>
-                    <div className="text-white font-semibold">~$20,000</div>
+                    <div className="text-white font-semibold">~$12,000</div>
                   </div>
                   <div className="bg-slate-800/50 rounded-lg p-3">
                     <div className="text-slate-400">Runway</div>
-                    <div className="text-white font-semibold">~5 months</div>
+                    <div className="text-white font-semibold">~16 months</div>
                   </div>
                   <div className="bg-slate-800/50 rounded-lg p-3">
                     <div className="text-slate-400">Team Size</div>

@@ -1,3 +1,5 @@
+import type { Company, Decision, GameEvent } from '../types/game'
+
 const REPORT_TEMPLATES = {
   opening: [
     "Welcome to {company}! Your journey in the {industry} space begins now.",
@@ -21,7 +23,15 @@ const REPORT_TEMPLATES = {
   ],
 }
 
-export function generateAIMockReport(state, decisions, events) {
+function fillTemplate(template: string, vars: Record<string, string>): string {
+  let result = template
+  for (const [key, value] of Object.entries(vars)) {
+    result = result.replace(new RegExp(`\\{${key}\\}`, 'g'), value)
+  }
+  return result
+}
+
+function generateMockReport(state: Company, decisions: Decision[], events: GameEvent[]): string {
   const templates = state.funds < 50000 ? REPORT_TEMPLATES.critical :
     state.marketHeat > 60 ? REPORT_TEMPLATES.thriving :
     state.month < 3 ? REPORT_TEMPLATES.opening :
@@ -29,12 +39,13 @@ export function generateAIMockReport(state, decisions, events) {
 
   const template = templates[Math.floor(Math.random() * templates.length)]
 
-  let report = template
-    .replace(/{company}/g, state.name)
-    .replace(/{industry}/g, state.industry)
-    .replace(/{funds}/g, `$${state.funds.toLocaleString()}`)
-    .replace(/{users}/g, state.users)
-    .replace(/{month}/g, state.month)
+  let report = fillTemplate(template, {
+    company: state.name,
+    industry: state.industry,
+    funds: `$${state.funds.toLocaleString()}`,
+    users: String(state.users),
+    month: String(state.month),
+  })
 
   if (decisions.length > 0) {
     report += `\n\nThis month you invested in: ${decisions.map(d => d.name).join(', ')}.`
@@ -47,20 +58,21 @@ export function generateAIMockReport(state, decisions, events) {
   return report
 }
 
-export function generateMonthSummary(state) {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  return `Month ${state.month - 1} — ${months[(state.month - 2) % 12]}, Year ${Math.floor((state.month - 2) / 12) + 1}`
-}
-
-export async function generateLLMReport(state, decisions, events) {
+export async function generateLLMReport(
+  state: Company,
+  decisions: Decision[],
+  events: GameEvent[]
+): Promise<string> {
   // Placeholder for real LLM API integration
-  // In production, this would call an actual LLM endpoint
+  // In production, this would call an actual LLM endpoint:
+  //
   // const response = await fetch('/api/generate-report', {
   //   method: 'POST',
   //   headers: { 'Content-Type': 'application/json' },
   //   body: JSON.stringify({ state, decisions, events })
   // })
-  // return await response.json()
+  // const data = await response.json()
+  // return data.report
 
-  return generateAIMockReport(state, decisions, events)
+  return generateMockReport(state, decisions, events)
 }

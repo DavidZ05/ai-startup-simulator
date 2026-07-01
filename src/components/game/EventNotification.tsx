@@ -1,6 +1,8 @@
-export default function EventNotification({ event }) {
-  if (!event) return null
+interface EventNotificationProps {
+  event: { title: string; description: string }
+}
 
+export function EventNotification({ event }: EventNotificationProps) {
   return (
     <div className="fixed top-4 right-4 z-40 animate-slide-in">
       <div className={`px-5 py-3 rounded-xl border shadow-xl backdrop-blur-xl max-w-sm ${

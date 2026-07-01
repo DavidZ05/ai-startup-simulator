@@ -1,53 +1,45 @@
-import { useState, useEffect } from 'react'
-import Dashboard from './Dashboard.jsx'
-import DecisionPanel from './DecisionPanel.jsx'
-import MonthlyReport from './MonthlyReport.jsx'
-import EventNotification from './EventNotification.jsx'
-import { processMonth } from '../game/engine.js'
+import { useEffect } from 'react'
+import { useGameContext } from '../../context/GameContext'
+import { processMonth } from '../../engine/processor'
+import { Dashboard } from './Dashboard'
+import { DecisionPanel } from './DecisionPanel'
+import { MonthlyReport } from './MonthlyReport'
+import { EventNotification } from './EventNotification'
+import type { Decision } from '../../types/game'
 
-export default function GameBoard({ initialCompany, onEnd }) {
-  const [company, setCompany] = useState(initialCompany)
-  const [report, setReport] = useState(null)
-  const [currentEvent, setCurrentEvent] = useState(null)
-  const [history, setHistory] = useState([initialCompany])
-  const [processing, setProcessing] = useState(false)
-  const [turn, setTurn] = useState(1)
+export function GameBoard() {
+  const { state, dispatch } = useGameContext()
+  const { company, currentReport, currentEvent, turn, processing } = state
 
   useEffect(() => {
     if (currentEvent) {
-      const timer = setTimeout(() => setCurrentEvent(null), 4000)
+      const timer = setTimeout(() => dispatch({ type: 'SET_EVENT', event: null }), 4000)
       return () => clearTimeout(timer)
     }
-  }, [currentEvent])
+  }, [currentEvent, dispatch])
 
-  const handleDecide = (decisions) => {
-    setProcessing(true)
+  const handleDecide = (decisions: Decision[]) => {
+    if (!company) return
+
+    dispatch({ type: 'PROCESS_MONTH', decisions })
 
     setTimeout(() => {
       const result = processMonth(company, decisions)
-
-      setCompany(result.state)
-      setHistory(prev => [...prev, result.state])
-
-      if (result.events.length > 0) {
-        setCurrentEvent(result.events[Math.floor(Math.random() * result.events.length)])
-      }
-
-      setReport(result.report)
-      setProcessing(false)
+      dispatch({ type: 'MONTH_PROCESSED', result })
 
       if (result.endCondition) {
         setTimeout(() => {
-          onEnd(result.endCondition, result.state, history)
+          dispatch({ type: 'END_GAME', result: result.endCondition!, company: result.state })
         }, 500)
       }
     }, 800)
   }
 
   const handleCloseReport = () => {
-    setReport(null)
-    setTurn(prev => prev + 1)
+    dispatch({ type: 'CLOSE_REPORT' })
   }
+
+  if (!company) return null
 
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   const currentMonthName = monthNames[(company.month - 1) % 12]
@@ -89,15 +81,16 @@ export default function GameBoard({ initialCompany, onEnd }) {
             <DecisionPanel
               company={company}
               onDecide={handleDecide}
-              onEndTurn={handleCloseReport}
               disabled={processing}
             />
           </div>
         </div>
       </div>
 
-      {report && <MonthlyReport report={report} onClose={handleCloseReport} />}
-      <EventNotification event={currentEvent} />
+      {currentReport && (
+        <MonthlyReport report={currentReport.report} onClose={handleCloseReport} />
+      )}
+      {currentEvent && <EventNotification event={currentEvent} />}
     </div>
   )
 }

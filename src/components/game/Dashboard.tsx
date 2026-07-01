@@ -1,11 +1,13 @@
+import type { Company } from '../../types/game'
+
 const METRIC_CONFIG = {
-  funds: { label: 'Funds', icon: '💰', color: 'emerald', max: 500000, unit: '$', format: (v) => `$${v.toLocaleString()}` },
-  users: { label: 'Users', icon: '👥', color: 'blue', max: 1000, unit: '', format: (v) => v.toLocaleString() },
-  revenue: { label: 'Revenue', icon: '📈', color: 'purple', max: 100, unit: '%', format: (v) => `${v}%` },
-  teamMorale: { label: 'Team Morale', icon: '❤️', color: 'rose', max: 100, unit: '%', format: (v) => `${v}%` },
-  product: { label: 'Product', icon: '💻', color: 'cyan', max: 100, unit: '%', format: (v) => `${v}%` },
-  marketHeat: { label: 'Market Heat', icon: '🔥', color: 'amber', max: 100, unit: '%', format: (v) => `${v}%` },
-  competition: { label: 'Competition', icon: '⚔️', color: 'red', max: 100, unit: '%', format: (v) => `${v}%` },
+  funds: { label: 'Funds', icon: '💰', color: 'emerald', max: 500000, format: (v: number) => `$${v.toLocaleString()}` },
+  users: { label: 'Users', icon: '👥', color: 'blue', max: 1000, format: (v: number) => v.toLocaleString() },
+  revenue: { label: 'Revenue', icon: '📈', color: 'purple', max: 100, format: (v: number) => `${v}%` },
+  teamMorale: { label: 'Team Morale', icon: '❤️', color: 'rose', max: 100, format: (v: number) => `${v}%` },
+  product: { label: 'Product', icon: '💻', color: 'cyan', max: 100, format: (v: number) => `${v}%` },
+  marketHeat: { label: 'Market Heat', icon: '🔥', color: 'amber', max: 100, format: (v: number) => `${v}%` },
+  competition: { label: 'Competition', icon: '⚔️', color: 'red', max: 100, format: (v: number) => `${v}%` },
 }
 
 const COLOR_MAP = {
@@ -18,7 +20,11 @@ const COLOR_MAP = {
   red: { bar: 'bg-red-500', text: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30' },
 }
 
-export default function Dashboard({ company }) {
+interface DashboardProps {
+  company: Company
+}
+
+export function Dashboard({ company }: DashboardProps) {
   return (
     <div className="bg-[#1e1e3a]/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6 shadow-xl">
       <div className="flex items-center gap-2 mb-5">
@@ -28,9 +34,9 @@ export default function Dashboard({ company }) {
 
       <div className="space-y-3">
         {Object.entries(METRIC_CONFIG).map(([key, config]) => {
-          const value = company[key]
+          const value = company[key as keyof Company] as number
           const percentage = Math.min((value / config.max) * 100, 100)
-          const colors = COLOR_MAP[config.color]
+          const colors = COLOR_MAP[config.color as keyof typeof COLOR_MAP]
 
           return (
             <div key={key} className={`p-3 rounded-xl ${colors.bg} border ${colors.border} transition-all duration-300`}>
@@ -62,7 +68,7 @@ export default function Dashboard({ company }) {
         <div className="flex items-center justify-between text-sm mt-2">
           <span className="text-slate-400">Runway</span>
           <span className={`font-medium ${company.funds < 50000 ? 'text-red-400' : company.funds < 100000 ? 'text-amber-400' : 'text-emerald-400'}`}>
-            {Math.floor(company.funds / (company.burnRate * 2000))} months
+            {Math.floor(company.funds / (company.burnRate * 1500))} months
           </span>
         </div>
       </div>

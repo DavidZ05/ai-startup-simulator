@@ -1,29 +1,32 @@
 import { useState, useMemo } from 'react'
-import { DECISIONS } from '../game/decisions.js'
+import { DECISIONS } from '../../config/decisions'
+import { getDecisionCost } from '../../engine/calculator'
+import { checkCooldown, checkRequirements } from '../../engine/validator'
+import type { Company, Decision } from '../../types/game'
 
-export default function DecisionPanel({ company, onDecide, onEndTurn, disabled }) {
-  const [selected, setSelected] = useState([])
+interface DecisionPanelProps {
+  company: Company
+  onDecide: (decisions: Decision[]) => void
+  disabled: boolean
+}
 
+export function DecisionPanel({ company, onDecide, disabled }: DecisionPanelProps) {
+  const [selected, setSelected] = useState<Decision[]>([])
   const remaining = company.maxDecisions - selected.length
 
   const decisionsWithStatus = useMemo(() => {
     return DECISIONS.map(d => {
-      const cost = typeof d.cost === 'function' ? d.cost(company.funds) : d.cost
+      const cost = getDecisionCost(d, company.funds)
       const canAfford = company.funds >= cost
-
-      const onCooldown = d.cooldown && (company.cooldowns?.[d.id])
-        ? (company.month - company.cooldowns[d.id]) < d.cooldown
-        : false
-      const cooldownLeft = onCooldown ? d.cooldown - (company.month - company.cooldowns[d.id]) : 0
-
-      const meetsRequirements = !d.require || Object.entries(d.require).every(
-        ([key, min]) => (company[key] || 0) >= min
-      )
+      const onCooldown = !checkCooldown(d, company)
+      const cooldownLeft = onCooldown && d.cooldown && company.cooldowns?.[d.id]
+        ? d.cooldown - (company.month - company.cooldowns[d.id])
+        : 0
+      const meetsRequirements = checkRequirements(d, company)
 
       let dynamicDisplay = null
       if (d.dynamicEffect) {
-        const dyn = d.dynamicEffect(company)
-        dynamicDisplay = dyn
+        dynamicDisplay = d.dynamicEffect(company)
       }
 
       return {
@@ -38,7 +41,7 @@ export default function DecisionPanel({ company, onDecide, onEndTurn, disabled }
     })
   }, [company])
 
-  const toggleDecision = (decision) => {
+  const toggleDecision = (decision: typeof decisionsWithStatus[0]) => {
     if (disabled) return
     if (!decision.canAfford || decision.onCooldown || !decision.meetsRequirements) return
 
@@ -55,10 +58,10 @@ export default function DecisionPanel({ company, onDecide, onEndTurn, disabled }
   }
 
   const categories = {
-    core: { label: 'Core', color: 'cyan' },
-    growth: { label: 'Growth', color: 'emerald' },
-    team: { label: 'Team', color: 'rose' },
-    finance: { label: 'Finance', color: 'amber' },
+    core: { label: 'Core' },
+    growth: { label: 'Growth' },
+    team: { label: 'Team' },
+    finance: { label: 'Finance' },
   }
 
   return (
@@ -68,13 +71,11 @@ export default function DecisionPanel({ company, onDecide, onEndTurn, disabled }
           <span className="text-xl">⚡</span>
           <h2 className="text-lg font-bold text-white">Decisions</h2>
         </div>
-        <div className="flex items-center gap-2">
-          <span className={`text-sm px-3 py-1 rounded-full font-medium ${
-            remaining === 0 ? 'bg-red-500/20 text-red-400' : 'bg-indigo-500/20 text-indigo-400'
-          }`}>
-            {remaining} remaining
-          </span>
-        </div>
+        <span className={`text-sm px-3 py-1 rounded-full font-medium ${
+          remaining === 0 ? 'bg-red-500/20 text-red-400' : 'bg-indigo-500/20 text-indigo-400'
+        }`}>
+          {remaining} remaining
+        </span>
       </div>
 
       <div className="space-y-2">
@@ -116,7 +117,7 @@ export default function DecisionPanel({ company, onDecide, onEndTurn, disabled }
                       )}
                       {!decision.meetsRequirements && (
                         <div className="mt-2 text-[10px] px-2 py-1 rounded-full bg-red-500/15 text-red-400 inline-block">
-                          Requires: {Object.entries(decision.require).map(([k, v]) => `${k} ≥ ${v}`).join(', ')}
+                          Requires: {Object.entries(decision.require || {}).map(([k, v]) => `${k} ≥ ${v}`).join(', ')}
                         </div>
                       )}
 
@@ -124,15 +125,15 @@ export default function DecisionPanel({ company, onDecide, onEndTurn, disabled }
                         {decision.dynamicDisplay ? (
                           Object.entries(decision.dynamicDisplay).map(([key, val]) => (
                             <span key={key} className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-emerald-500/15 text-emerald-400">
-                              +${val.toLocaleString()} {key}
+                              +${(val as number).toLocaleString()} {key}
                             </span>
                           ))
                         ) : (
                           Object.entries(decision.effects).map(([key, val]) => (
                             <span key={key} className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
-                              val > 0 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'
+                              (val as number) > 0 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'
                             }`}>
-                              {val > 0 ? '+' : ''}{val} {key}
+                              {(val as number) > 0 ? '+' : ''}{val} {key}
                             </span>
                           ))
                         )}

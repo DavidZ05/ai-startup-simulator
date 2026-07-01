@@ -1,6 +1,14 @@
-export default function EndGame({ company, result, history, onRestart }) {
+import type { Company, EndCondition } from '../../types/game'
+
+interface EndGameProps {
+  company: Company
+  result: EndCondition
+  history: Company[]
+  onRestart: () => void
+}
+
+export function EndGame({ company, result, history, onRestart }: EndGameProps) {
   const isSuccess = result.type === 'success'
-  const months = history.length
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#0f0f23] via-[#1a1a3e] to-[#0f0f23]">
@@ -20,7 +28,7 @@ export default function EndGame({ company, result, history, onRestart }) {
         <div className="bg-[#1e1e3a]/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6 shadow-2xl">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-white mb-1">{company.name}</h2>
-            <p className="text-slate-400">{company.industry} · {months} months</p>
+            <p className="text-slate-400">{company.industry} · {history.length} months</p>
           </div>
 
           <div className="grid grid-cols-3 gap-3 mb-6">
