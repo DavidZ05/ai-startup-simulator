@@ -1,4 +1,4 @@
-import { Router, Response } from 'express'
+import { Router, Request, Response } from 'express'
 import db, { getDbSize, cleanupOldGames } from '../db'
 import { authMiddleware } from './auth'
 
@@ -13,7 +13,7 @@ router.use(authMiddleware)
 router.get('/stats', (req: AuthRequest, res: Response) => {
   const userGames = db.prepare('SELECT COUNT(*) as count FROM games WHERE user_id = ?').get(req.userId) as any
   const userHistory = db.prepare(`
-    SELECT COUNT(*) as count FROM game_history 
+    SELECT COUNT(*) as count FROM game_history
     WHERE game_id IN (SELECT id FROM games WHERE user_id = ?)
   `).get(req.userId) as any
 

@@ -1,4 +1,4 @@
-import { Router, Response } from 'express'
+import { Router, Request, Response } from 'express'
 import db from '../db'
 import { authMiddleware } from './auth'
 
@@ -8,7 +8,7 @@ interface AuthRequest extends Request {
   userId?: number
 }
 
-router.get('/', (req: AuthRequest, res: Response) => {
+router.get('/', (req: Request, res: Response) => {
   const limit = Math.min(parseInt(req.query.limit as string) || 20, 100)
 
   const leaderboard = db.prepare(`
