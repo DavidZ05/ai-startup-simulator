@@ -87,7 +87,7 @@ export function processMonth(state: Company, decisions: Decision[]): MonthResult
   const burnCost = Math.round(newState.burnRate * GAME_CONFIG.BURN_COST_MULTIPLIER)
   newState.funds = Math.max(0, newState.funds - burnCost)
 
-  const revenueGrowth = newState.revenue > 0 ? Math.round(newState.users * GAME_CONFIG.REVENUE_GROWTH_RATE) : 0
+  const revenueGrowth = newState.revenue > 0 ? Math.max(1, Math.round(newState.users * GAME_CONFIG.REVENUE_GROWTH_RATE)) : 0
   newState.revenue = Math.min(100, newState.revenue + revenueGrowth)
 
   const userGrowth = Math.round(newState.marketHeat * GAME_CONFIG.USER_GROWTH_RATE)

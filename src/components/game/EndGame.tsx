@@ -68,21 +68,31 @@ export function EndGame({ company, result, history, onRestart }: EndGameProps) {
             {history.length > 0 && (
               <div className="mb-6">
                 <h3 className="text-sm font-semibold text-slate-300 mb-3">Journey Timeline</h3>
-                <div className="bg-[#12122a] rounded-xl p-3 max-h-32 overflow-y-auto">
-                  <div className="space-y-2">
-                    {history.map((entry, i) => (
-                      <div key={i} className="flex items-center gap-3 text-sm">
-                        <span className="text-slate-500 w-16 shrink-0 text-xs">M{i + 1}</span>
-                        <div className="flex-1 h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-300"
-                            style={{ width: `${Math.min((entry.funds / 500000) * 100, 100)}%` }}
-                          />
-                        </div>
-                        <span className="text-slate-400 w-16 text-right text-xs">${entry.funds.toLocaleString()}</span>
-                      </div>
-                    ))}
-                  </div>
+                <div className="bg-[#12122a] rounded-xl p-4 max-h-48 overflow-y-auto">
+                  <table className="w-full">
+                    <tbody>
+                      {history.map((entry, i) => {
+                        const pct = Math.min((entry.funds / 500000) * 100, 100)
+                        const isLast = i === history.length - 1
+                        return (
+                          <tr key={i} className={`border-b border-slate-700/30 last:border-0 ${isLast ? 'bg-indigo-500/5' : ''}`}>
+                            <td className="py-2 pr-3 text-xs font-mono text-slate-500 w-10">M{i + 1}</td>
+                            <td className="py-2 px-3 w-2/5">
+                              <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
+                            </td>
+                            <td className="py-2 pl-3 text-xs font-mono text-slate-300 text-right w-20">
+                              ${entry.funds.toLocaleString()}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}

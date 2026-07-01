@@ -10,7 +10,7 @@ interface AuthRequest extends Request {
   userId?: number
 }
 
-function authMiddleware(req: AuthRequest, res: Response, next: Function) {
+function authMiddleware(req: AuthRequest, res: Response, next: () => void) {
   const token = req.headers.authorization?.split(' ')[1]
   if (!token) {
     return res.status(401).json({ error: 'No token provided' })
