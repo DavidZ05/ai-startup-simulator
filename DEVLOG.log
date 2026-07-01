@@ -108,6 +108,8 @@ f18a16d fix: timeline UI + code review fixes
 0ed4c8d docs: add development log (exempt from gitignore)
 79e83de docs: update architecture diagrams with auth components
 8ec6d0d feat: add game state persistence
+cc90cb2 feat: production hardening and optimizations
+7223109 fix: server TypeScript errors and API validation
 
 ============================================================
   KNOWN ISSUES (Fixed)

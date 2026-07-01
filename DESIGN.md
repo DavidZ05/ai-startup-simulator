@@ -497,3 +497,11 @@ The decision engine supports three advanced mechanisms:
 - Added database compression and cleanup utilities
 - Added storage stats API endpoint
 - Optimized SQLite settings for local deployment
+
+### v1.5 — Bug Fixes
+**Changes**:
+- Fixed server TypeScript compilation errors
+- Fixed validateState middleware to use local constants
+- Fixed Request import in leaderboard and storage routes
+- Fixed db.ts type annotation for better-sqlite3
+- Removed broken start.ts file
