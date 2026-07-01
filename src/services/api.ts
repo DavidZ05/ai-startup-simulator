@@ -1,10 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
-interface ApiResponse<T> {
-  data?: T
-  error?: string
-}
-
 class ApiClient {
   private token: string | null = null
 
@@ -75,7 +70,7 @@ class ApiClient {
     return this.request<Array<{ id: number; company_name: string; industry: string; is_active: boolean; updated_at: string }>>('/games')
   }
 
-  async createGame(companyName: string, industry: string, state: any) {
+  async createGame(companyName: string, industry: string, state: unknown) {
     return this.request<{ id: number; companyName: string; industry: string }>('/games', {
       method: 'POST',
       body: JSON.stringify({ companyName, industry, state }),
@@ -83,17 +78,17 @@ class ApiClient {
   }
 
   async getGame(id: number) {
-    return this.request<{ id: number; company_name: string; industry: string; state: any }>(`/games/${id}`)
+    return this.request<{ id: number; company_name: string; industry: string; state: unknown }>(`/games/${id}`)
   }
 
-  async updateGame(id: number, state: any) {
+  async updateGame(id: number, state: unknown) {
     return this.request<{ success: boolean }>(`/games/${id}`, {
       method: 'PUT',
       body: JSON.stringify({ state }),
     })
   }
 
-  async saveGameHistory(gameId: number, month: number, stateSnapshot: any, decisions: any[], events: any[]) {
+  async saveGameHistory(gameId: number, month: number, stateSnapshot: unknown, decisions: unknown[], events: unknown[]) {
     return this.request<{ success: boolean }>(`/games/${gameId}/history`, {
       method: 'POST',
       body: JSON.stringify({ month, stateSnapshot, decisions, events }),
@@ -101,7 +96,7 @@ class ApiClient {
   }
 
   async getGameHistory(gameId: number) {
-    return this.request<Array<{ month: number; state_snapshot: any; decisions: any; events: any }>>(`/games/${gameId}/history`)
+    return this.request<Array<{ month: number; state_snapshot: unknown; decisions: unknown; events: unknown }>>(`/games/${gameId}/history`)
   }
 
   async deleteGame(id: number) {
@@ -110,7 +105,7 @@ class ApiClient {
     })
   }
 
-  async generateReport(state: any, decisions: any[], events: any[]) {
+  async generateReport(state: unknown, decisions: unknown[], events: unknown[]) {
     return this.request<{ report: string }>('/ai/report', {
       method: 'POST',
       body: JSON.stringify({ state, decisions, events }),
