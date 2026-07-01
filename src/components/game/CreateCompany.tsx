@@ -5,7 +5,7 @@ import type { Company } from '../../types/game'
 import { useState } from 'react'
 
 export function CreateCompany() {
-  const { dispatch } = useGameContext()
+  const { newGame } = useGameContext()
   const [step, setStep] = useState(1)
   const [company, setCompany] = useState({
     name: '',
@@ -19,7 +19,7 @@ export function CreateCompany() {
     ? company.industry !== ''
     : company.targetUsers.length >= 2
 
-  const handleStart = () => {
+  const handleStart = async () => {
     const selectedIndustry = INDUSTRIES.find(i => i.id === company.industry)
     const newCompany: Company = {
       name: company.name,
@@ -38,7 +38,7 @@ export function CreateCompany() {
       fundraisingCount: 0,
       cooldowns: {},
     }
-    dispatch({ type: 'START_GAME', company: newCompany })
+    await newGame(newCompany)
   }
 
   return (

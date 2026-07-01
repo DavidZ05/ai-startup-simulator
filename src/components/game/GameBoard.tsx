@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useGameContext } from '../../context/GameContext'
 import { processMonth } from '../../engine/processor'
 import { Dashboard } from './Dashboard'
@@ -8,8 +8,9 @@ import { EventNotification } from './EventNotification'
 import type { Decision } from '../../types/game'
 
 export function GameBoard() {
-  const { state, dispatch } = useGameContext()
+  const { state, dispatch, saveGame } = useGameContext()
   const { company, currentReport, currentEvent, turn, processing } = state
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (currentEvent) {
@@ -17,6 +18,22 @@ export function GameBoard() {
       return () => clearTimeout(timer)
     }
   }, [currentEvent, dispatch])
+
+  useEffect(() => {
+    if (company && !processing) {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+      saveTimeoutRef.current = setTimeout(() => {
+        saveGame()
+      }, 1000)
+    }
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+    }
+  }, [company, processing, saveGame])
 
   const handleDecide = (decisions: Decision[]) => {
     if (!company) return
