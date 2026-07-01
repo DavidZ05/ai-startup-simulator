@@ -353,6 +353,31 @@ src/
 │   ├── api.ts                 # Backend API client
 │   └── ai.service.ts          # LLM integration
 ├── hooks/useGameState.ts      # State reducer
+├── context/
+│   ├── GameContext.tsx         # Game state context
+│   └── AuthContext.tsx         # Auth state context
+├── components/
+│   ├── ui/ErrorBoundary.tsx    # Error handling
+│   ├── auth/LoginForm.tsx      # Login/Register UI
+│   └── game/                   # Game UI components
+├── App.tsx
+└── main.tsx
+```
+src/
+├── types/game.ts              # TypeScript type definitions
+├── config/
+│   ├── constants.ts           # Game balance constants
+│   └── decisions.ts           # Decision & event definitions
+├── engine/
+│   ├── calculator.ts          # Metric calculations
+│   ├── validator.ts           # Decision validation
+│   ├── events.ts              # Random event system
+│   ├── conditions.ts          # Win/lose conditions
+│   └── processor.ts           # Monthly processing
+├── services/
+│   ├── api.ts                 # Backend API client
+│   └── ai.service.ts          # LLM integration
+├── hooks/useGameState.ts      # State reducer
 ├── context/GameContext.tsx     # Global state
 ├── components/
 │   ├── ui/ErrorBoundary.tsx    # Error handling

@@ -59,20 +59,25 @@ mini-game-demo/
 │   │   ├── api.ts                # Backend API client
 │   │   └── ai.service.ts         # LLM integration
 │   ├── hooks/useGameState.ts     # State reducer
-│   ├── context/GameContext.tsx    # Global state
-│   └── components/
-│       ├── ui/ErrorBoundary.tsx   # Error handling
-│       └── game/                  # Game UI components
+│   ├── context/
+│   │   ├── GameContext.tsx        # Game state context
+│   │   └── AuthContext.tsx        # Auth state context
+│   ├── components/
+│   │   ├── ui/ErrorBoundary.tsx   # Error handling
+│   │   ├── auth/LoginForm.tsx     # Login/Register UI
+│   │   └── game/                  # Game UI components
 ├── server/                        # Backend
 │   ├── index.ts                   # Express server
 │   ├── db.ts                      # SQLite setup
+│   ├── package.json               # Server-only deps
 │   └── routes/
 │       ├── auth.ts                # Register/login
 │       ├── game.ts                # Game CRUD
 │       ├── ai.ts                  # LLM proxy
 │       └── leaderboard.ts         # Rankings
 ├── DESIGN.md                      # Game design document
-└── package.json
+├── DEVLOG.log                     # Development log
+└── README.md
 ```
 
 ## API Endpoints
