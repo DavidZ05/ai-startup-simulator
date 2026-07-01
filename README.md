@@ -4,43 +4,108 @@ A turn-based business simulation game where you build a startup from seed to suc
 
 ## Quick Start
 
+### Frontend Only (Mock AI)
 ```bash
-cd mini-game-demo
 npm install
 npm run dev
 ```
+Open **http://localhost:5173/**
 
-Open **http://localhost:5173/** in your browser.
+### Full Stack (with Backend)
+```bash
+# Terminal 1: Backend
+cp server/.env.example server/.env  # Edit with your OpenAI key
+npm run dev:server
+
+# Terminal 2: Frontend
+npm run dev
+```
+
+### Run Both Together
+```bash
+npm run dev:all
+```
 
 ## Tech Stack
 
+### Frontend
 - **React 19** + **Vite**
 - **Tailwind CSS v4**
-- No backend required (mock AI, all client-side)
+- **TypeScript** (strict mode)
+- **Context + useReducer** state management
+
+### Backend
+- **Node.js** + **Express**
+- **SQLite** (via better-sqlite3)
+- **JWT** authentication
+- **OpenAI API** integration (optional)
 
 ## Project Structure
 
 ```
 mini-game-demo/
-├── src/
-│   ├── App.jsx                    # Screen router (create → game → end)
-│   ├── main.jsx                   # React entry point
-│   ├── index.css                  # Tailwind + custom animations
-│   ├── game/
-│   │   ├── decisions.js           # 8 decisions, 10 events, win/lose conditions
-│   │   ├── engine.js              # Monthly processing logic
-│   │   └── ai.js                  # Mock AI reports (LLM-ready)
+├── src/                          # Frontend
+│   ├── types/game.ts             # TypeScript types
+│   ├── config/
+│   │   ├── constants.ts          # Game balance constants
+│   │   └── decisions.ts          # Decision & event definitions
+│   ├── engine/                   # Game logic
+│   │   ├── calculator.ts         # Metric calculations
+│   │   ├── validator.ts          # Decision validation
+│   │   ├── events.ts             # Random event system
+│   │   ├── conditions.ts         # Win/lose conditions
+│   │   └── processor.ts          # Monthly processing
+│   ├── services/
+│   │   ├── api.ts                # Backend API client
+│   │   └── ai.service.ts         # LLM integration
+│   ├── hooks/useGameState.ts     # State reducer
+│   ├── context/GameContext.tsx    # Global state
 │   └── components/
-│       ├── CreateCompany.jsx      # 3-step company creation wizard
-│       ├── GameBoard.jsx          # Main game interface
-│       ├── Dashboard.jsx          # 7-metric progress bars
-│       ├── DecisionPanel.jsx      # Decision selection (3 per round)
-│       ├── MonthlyReport.jsx      # AI report modal
-│       ├── EventNotification.jsx  # Random event toast
-│       └── EndGame.jsx            # Victory/defeat screen
-├── DESIGN.md                      # Full game design document
-└── src/game/balance-test.js       # Balance simulation script
+│       ├── ui/ErrorBoundary.tsx   # Error handling
+│       └── game/                  # Game UI components
+├── server/                        # Backend
+│   ├── index.ts                   # Express server
+│   ├── db.ts                      # SQLite setup
+│   └── routes/
+│       ├── auth.ts                # Register/login
+│       ├── game.ts                # Game CRUD
+│       ├── ai.ts                  # LLM proxy
+│       └── leaderboard.ts         # Rankings
+├── DESIGN.md                      # Game design document
+└── package.json
 ```
+
+## API Endpoints
+
+### Auth
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/auth/register | Create account |
+| POST | /api/auth/login | Login |
+| GET | /api/auth/me | Get current user |
+
+### Games
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/games | List user's games |
+| POST | /api/games | Create new game |
+| GET | /api/games/:id | Get game state |
+| PUT | /api/games/:id | Update game state |
+| DELETE | /api/games/:id | Delete game |
+| POST | /api/games/:id/history | Save month history |
+| GET | /api/games/:id/history | Get game history |
+
+### AI
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/ai/report | Generate monthly report |
+
+### Leaderboard
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/leaderboard | Get top scores |
+| POST | /api/leaderboard | Submit score |
+| GET | /api/leaderboard/my | Get user's scores |
 
 ## How to Play
 
@@ -65,23 +130,17 @@ mini-game-demo/
 
 ## LLM Integration
 
-The game uses mock AI reports. To integrate a real LLM, edit `src/game/ai.js`:
+The game supports OpenAI API for AI-generated reports.
 
-```javascript
-export async function generateLLMReport(state, decisions, events) {
-  const response = await fetch('/api/generate-report', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ state, decisions, events })
-  })
-  return await response.json()
-}
-```
+1. Copy `server/.env.example` to `server/.env`
+2. Add your OpenAI API key
+3. Reports will be generated by GPT-4o-mini
+4. Falls back to mock reports if API is unavailable
 
 ## Balance Testing
 
 Run the simulation to verify game balance:
 
 ```bash
-node src/game/balance-test.js
+npx tsx src/engine/balance-test.ts
 ```
