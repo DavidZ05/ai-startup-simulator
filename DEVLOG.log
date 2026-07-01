@@ -1,0 +1,173 @@
+============================================================
+  AI Startup Simulator — Development Log
+============================================================
+
+Project: AI Startup Simulator
+Location: /Users/jiahaozhong/David/Study/mini-game-demo
+Duration: Single session
+Author: MiMo Code Agent + Jiahao Zhong
+
+============================================================
+  SESSION SUMMARY
+============================================================
+
+Built a complete AI Startup Simulator web game from scratch:
+- Turn-based business simulation game
+- React + TypeScript frontend
+- Node.js + Express backend
+- SQLite database
+- OpenAI API integration
+
+============================================================
+  TIMELINE
+============================================================
+
+[Phase 1] Initial Project Setup
+--------------------------------
+- Created mini-game-demo folder
+- Initialized Vite + React project
+- Installed Tailwind CSS
+- Built initial game with 8 decisions, 10 random events, 7 metrics
+
+[Phase 2] Balance Testing & Patching
+-------------------------------------
+- Identified fundraising exploit (infinite $195K net gain per round)
+- Added 3-layer fix: threshold gate, cooldown, diminishing returns
+- Ran 10 strategy simulations via balance-test.js
+- Found game was too hard (all strategies failed in 3-5 months)
+- Rebalanced: doubled starting funds, reduced burn rate and costs
+- Verified 6/10 strategies can now win
+
+[Phase 3] TypeScript Refactoring
+---------------------------------
+- Migrated from JavaScript to TypeScript (strict mode)
+- Created type definitions (types/game.ts)
+- Extracted constants to config/constants.ts
+- Split engine into modular files (calculator, validator, events, conditions, processor)
+- Added Context + useReducer state management
+- Added ErrorBoundary component
+- Reorganized components into game/ and ui/ directories
+
+[Phase 4] Backend Development
+-------------------------------
+- Built Express server with TypeScript
+- Created SQLite database schema (users, games, game_history, leaderboard)
+- Implemented JWT authentication (register/login)
+- Added game CRUD operations with history tracking
+- Integrated OpenAI API for AI-generated reports
+- Added leaderboard system
+- Created frontend API client
+
+[Phase 5] UI Polish & Bug Fixes
+---------------------------------
+- Fixed EndGame timeline layout (switched to table design)
+- Added active:scale press feedback to all buttons
+- Fixed missing Request import in server routes
+- Fixed middleware type signature
+- Ensured revenue grows even with small user count
+
+[Phase 6] Architecture Improvements
+-------------------------------------
+- Separated backend dependencies into server/package.json
+- Added AuthContext + LoginForm for authentication
+- Connected frontend to backend auth flow
+- Cleaned up unused types in API client
+
+============================================================
+  KEY DECISIONS
+============================================================
+
+1. Game Balance:
+   - Starting funds: $200K (doubled from $100K)
+   - Burn rate: $12K/month (reduced from $20K)
+   - Fundraising: gated by product/users, 3-month cooldown, diminishing returns
+
+2. Tech Stack:
+   - Frontend: React 19 + Vite + Tailwind CSS + TypeScript
+   - Backend: Express + SQLite + JWT
+   - AI: OpenAI API with mock fallback
+
+3. Architecture:
+   - Context + useReducer for state management
+   - Modular engine (calculator, validator, events, conditions, processor)
+   - API client for backend communication
+
+============================================================
+  GIT HISTORY
+============================================================
+
+0e17794 feat: AI Startup Simulator with balanced game mechanics
+b092a19 docs: add project README with architecture and startup instructions
+aa5419e refactor: migrate to TypeScript with professional architecture
+ef68f6e feat: add backend with auth, game persistence, and LLM integration
+c1c2f4a docs: update DESIGN.md with TypeScript architecture and backend info
+6dde301 fix: improve UI polish and button visibility
+ad3bab2 chore: add database and env files to gitignore
+f18a16d fix: timeline UI + code review fixes
+56790d4 fix: architecture improvements
+
+============================================================
+  KNOWN ISSUES (Fixed)
+============================================================
+
+1. [FIXED] Fundraising exploit — infinite money via repeated fundraising
+2. [FIXED] Game too hard — all strategies failed in 3-5 months
+3. [FIXED] Timeline UI — labels obscured by progress bars
+4. [FIXED] Backend deps in frontend package.json
+5. [FIXED] Missing Request import in game routes
+6. [FIXED] Revenue never grew with small user count
+
+============================================================
+  REMAINING ITEMS
+============================================================
+
+- Frontend state not persisted to backend (refresh loses progress)
+- No loading spinners during API calls
+- Game state validation on backend (anti-cheat)
+- Rate limiting for API endpoints
+- Production deployment configuration
+
+============================================================
+  FILE STRUCTURE
+============================================================
+
+mini-game-demo/
+├── src/
+│   ├── types/game.ts              # TypeScript types
+│   ├── config/
+│   │   ├── constants.ts           # Game balance constants
+│   │   └── decisions.ts           # Decision & event definitions
+│   ├── engine/
+│   │   ├── calculator.ts          # Metric calculations
+│   │   ├── validator.ts           # Decision validation
+│   │   ├── events.ts              # Random event system
+│   │   ├── conditions.ts          # Win/lose conditions
+│   │   └── processor.ts           # Monthly processing
+│   ├── services/
+│   │   ├── api.ts                 # Backend API client
+│   │   └── ai.service.ts          # LLM integration
+│   ├── hooks/useGameState.ts      # State reducer
+│   ├── context/
+│   │   ├── GameContext.tsx         # Game state context
+│   │   └── AuthContext.tsx         # Auth state context
+│   ├── components/
+│   │   ├── ui/ErrorBoundary.tsx    # Error handling
+│   │   ├── auth/LoginForm.tsx      # Login/Register UI
+│   │   └── game/                   # Game UI components
+│   ├── App.tsx
+│   └── main.tsx
+├── server/
+│   ├── index.ts                   # Express server
+│   ├── db.ts                      # SQLite setup
+│   ├── package.json               # Server-only deps
+│   └── routes/
+│       ├── auth.ts                # JWT authentication
+│       ├── game.ts                # Game CRUD
+│       ├── ai.ts                  # LLM proxy
+│       └── leaderboard.ts         # Rankings
+├── DESIGN.md                      # Game design document
+└── README.md                      # Project documentation
+
+============================================================
+  END OF LOG
+============================================================
