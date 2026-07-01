@@ -159,7 +159,7 @@ export function CreateCompany() {
             {step > 1 ? (
               <button
                 onClick={() => setStep(step - 1)}
-                className="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-medium transition-all"
+                className="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-medium transition-all duration-200 active:scale-[0.98]"
               >
                 ← Back
               </button>
@@ -170,14 +170,14 @@ export function CreateCompany() {
               <button
                 onClick={() => setStep(step + 1)}
                 disabled={!canProceed}
-                className="px-8 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-400 disabled:bg-slate-600 disabled:text-slate-400 text-white font-semibold transition-all shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 disabled:shadow-none"
+                className="px-8 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-400 disabled:bg-slate-600 disabled:text-slate-400 text-white font-semibold transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 disabled:shadow-none active:scale-[0.98]"
               >
                 Next →
               </button>
             ) : (
               <button
                 onClick={handleStart}
-                className="px-8 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-bold text-lg transition-all shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 glow-border"
+                className="px-8 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-bold text-lg transition-all duration-200 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 glow-border active:scale-[0.98]"
               >
                 🚀 Launch Startup
               </button>

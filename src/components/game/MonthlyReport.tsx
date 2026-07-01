@@ -93,7 +93,7 @@ export function MonthlyReport({ report, onClose }: MonthlyReportProps) {
         <div className="px-6 py-4 border-t border-slate-700/50 bg-[#16163a]/50">
           <button
             onClick={onClose}
-            className="w-full py-3 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-semibold transition-all shadow-lg shadow-indigo-500/30"
+            className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-semibold transition-all duration-200 shadow-lg shadow-indigo-500/30 active:scale-[0.98]"
           >
             Continue to Next Month →
           </button>

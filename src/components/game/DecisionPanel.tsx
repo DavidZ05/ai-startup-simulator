@@ -153,7 +153,7 @@ export function DecisionPanel({ company, onDecide, disabled }: DecisionPanelProp
       <button
         onClick={handleConfirm}
         disabled={selected.length === 0 || disabled}
-        className="w-full mt-5 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 disabled:from-slate-600 disabled:to-slate-600 disabled:text-slate-400 text-white font-bold text-sm transition-all shadow-lg shadow-purple-500/20 disabled:shadow-none"
+        className="w-full mt-5 py-3.5 px-6 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 disabled:from-slate-600 disabled:to-slate-600 disabled:text-slate-400 text-white font-bold text-sm transition-all duration-200 shadow-lg shadow-purple-500/20 disabled:shadow-none active:scale-[0.98]"
       >
         {disabled ? 'Turn Processing...' : selected.length === 0 ? 'Select decisions above' : `Confirm ${selected.length} Decision${selected.length > 1 ? 's' : ''}`}
       </button>
