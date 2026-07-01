@@ -105,6 +105,9 @@ c1c2f4a docs: update DESIGN.md with TypeScript architecture and backend info
 ad3bab2 chore: add database and env files to gitignore
 f18a16d fix: timeline UI + code review fixes
 56790d4 fix: architecture improvements
+0ed4c8d docs: add development log (exempt from gitignore)
+79e83de docs: update architecture diagrams with auth components
+8ec6d0d feat: add game state persistence
 
 ============================================================
   KNOWN ISSUES (Fixed)
@@ -116,16 +119,19 @@ f18a16d fix: timeline UI + code review fixes
 4. [FIXED] Backend deps in frontend package.json
 5. [FIXED] Missing Request import in game routes
 6. [FIXED] Revenue never grew with small user count
+7. [FIXED] Frontend state not persisted to backend
+8. [FIXED] No game state validation on backend
+9. [FIXED] No rate limiting for API endpoints
+10. [FIXED] No production deployment configuration
 
 ============================================================
   REMAINING ITEMS
 ============================================================
 
-- Frontend state not persisted to backend (refresh loses progress)
-- No loading spinners during API calls
-- Game state validation on backend (anti-cheat)
-- Rate limiting for API endpoints
-- Production deployment configuration
+- Full loading skeleton screens (partial: added basic loading)
+- Database migration scripts for schema updates
+- Automated backups
+- Monitoring and logging
 
 ============================================================
   FILE STRUCTURE

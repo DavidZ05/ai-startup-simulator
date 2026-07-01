@@ -5,6 +5,8 @@ import authRoutes from './routes/auth'
 import gameRoutes from './routes/game'
 import aiRoutes from './routes/ai'
 import leaderboardRoutes from './routes/leaderboard'
+import storageRoutes from './routes/storage'
+import { rateLimiter } from './middleware/rateLimit'
 
 dotenv.config()
 
@@ -16,12 +18,14 @@ app.use(cors({
   credentials: true,
 }))
 
-app.use(express.json({ limit: '10mb' }))
+app.use(express.json({ limit: '1mb' }))
+app.use(rateLimiter)
 
 app.use('/api/auth', authRoutes)
 app.use('/api/games', gameRoutes)
 app.use('/api/ai', aiRoutes)
 app.use('/api/leaderboard', leaderboardRoutes)
+app.use('/api/storage', storageRoutes)
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
@@ -29,7 +33,16 @@ app.get('/api/health', (_req, res) => {
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`)
-  console.log(`📝 API docs: POST /api/auth/register, POST /api/auth/login`)
+  console.log(`📝 API: POST /api/auth/register, POST /api/auth/login`)
+  console.log(`🎮 Games: GET/POST /api/games`)
+  console.log(`🤖 AI: POST /api/ai/report`)
+  console.log(`🏆 Leaderboard: GET /api/leaderboard`)
+  console.log(`💾 Storage: GET /api/storage/stats`)
+})
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+  console.log(`📝 API: POST /api/auth/register, POST /api/auth/login`)
   console.log(`🎮 Games: GET/POST /api/games`)
   console.log(`🤖 AI: POST /api/ai/report`)
   console.log(`🏆 Leaderboard: GET /api/leaderboard`)

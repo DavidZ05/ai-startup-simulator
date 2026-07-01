@@ -398,12 +398,17 @@ src/
 ```
 server/
 ├── index.ts                   # Express server entry
-├── db.ts                      # SQLite database setup
+├── db.ts                      # SQLite database setup + compression
+├── middleware/
+│   ├── rateLimit.ts           # API rate limiting
+│   └── validateState.ts       # Game state validation
 ├── routes/
 │   ├── auth.ts                # JWT authentication
 │   ├── game.ts                # Game CRUD + history
 │   ├── ai.ts                  # LLM API proxy
-│   └── leaderboard.ts         # Score rankings
+│   ├── leaderboard.ts         # Score rankings
+│   └── storage.ts             # Storage stats + cleanup
+├── package.json               # Server-only dependencies
 └── tsconfig.json
 ```
 
@@ -483,3 +488,12 @@ The decision engine supports three advanced mechanisms:
 - Added game state persistence
 - Added OpenAI API integration for AI reports
 - Added leaderboard system
+
+### v1.4 — Production Hardening
+**Changes**:
+- Added rate limiting (60 requests/minute per IP)
+- Added game state validation on backend
+- Added Docker deployment configuration
+- Added database compression and cleanup utilities
+- Added storage stats API endpoint
+- Optimized SQLite settings for local deployment

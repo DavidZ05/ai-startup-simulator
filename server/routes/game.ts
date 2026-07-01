@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express'
 import db from '../db'
 import { authMiddleware } from './auth'
+import { validateGameState } from '../middleware/validateState'
 
 const router = Router()
 
@@ -49,7 +50,7 @@ router.get('/:id', (req: AuthRequest, res: Response) => {
   })
 })
 
-router.put('/:id', (req: AuthRequest, res: Response) => {
+router.put('/:id', validateGameState, (req: AuthRequest, res: Response) => {
   const { state } = req.body
 
   if (!state) {

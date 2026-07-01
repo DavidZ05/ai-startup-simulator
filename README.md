@@ -14,8 +14,10 @@ Open **http://localhost:5173/**
 ### Full Stack (with Backend)
 ```bash
 # Terminal 1: Backend
-cp server/.env.example server/.env  # Edit with your OpenAI key
-npm run dev:server
+cd server
+npm install
+cp .env.example .env  # Edit with your OpenAI key
+npm run dev
 
 # Terminal 2: Frontend
 npm run dev
@@ -24,6 +26,11 @@ npm run dev
 ### Run Both Together
 ```bash
 npm run dev:all
+```
+
+### Docker
+```bash
+docker-compose up
 ```
 
 ## Tech Stack
@@ -111,6 +118,12 @@ mini-game-demo/
 | GET | /api/leaderboard | Get top scores |
 | POST | /api/leaderboard | Submit score |
 | GET | /api/leaderboard/my | Get user's scores |
+
+### Storage
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/storage/stats | Get storage stats |
+| POST | /api/storage/cleanup | Cleanup old games |
 
 ## How to Play
 
