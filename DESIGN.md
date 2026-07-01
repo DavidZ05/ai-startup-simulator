@@ -335,39 +335,65 @@ Competition ──→ Suppresses Heat    Funds ←── Decisions & Burn Cost
 
 ## 11. Technical Architecture
 
+### Frontend (React + TypeScript)
+
 ```
 src/
-├── App.jsx                    # Screen router (create/game/end)
-├── game/
-│   ├── decisions.js           # Decision definitions, events, end conditions
-│   ├── engine.js              # Monthly processing logic
-│   └── ai.js                  # Mock AI report generation (LLM-ready)
-└── components/
-    ├── CreateCompany.jsx      # 3-step company creation wizard
-    ├── GameBoard.jsx          # Main game interface
-    ├── Dashboard.jsx          # 7-metric progress bars
-    ├── DecisionPanel.jsx      # Decision selection (3 per round)
-    ├── MonthlyReport.jsx      # AI report modal
-    ├── EventNotification.jsx  # Random event toast
-    └── EndGame.jsx            # Victory/defeat screen
+├── types/game.ts              # TypeScript type definitions
+├── config/
+│   ├── constants.ts           # Game balance constants
+│   └── decisions.ts           # Decision & event definitions
+├── engine/
+│   ├── calculator.ts          # Metric calculations
+│   ├── validator.ts           # Decision validation
+│   ├── events.ts              # Random event system
+│   ├── conditions.ts          # Win/lose conditions
+│   └── processor.ts           # Monthly processing
+├── services/
+│   ├── api.ts                 # Backend API client
+│   └── ai.service.ts          # LLM integration
+├── hooks/useGameState.ts      # State reducer
+├── context/GameContext.tsx     # Global state
+├── components/
+│   ├── ui/ErrorBoundary.tsx    # Error handling
+│   └── game/                   # Game UI components
+│       ├── CreateCompany.tsx
+│       ├── GameBoard.tsx
+│       ├── Dashboard.tsx
+│       ├── DecisionPanel.tsx
+│       ├── MonthlyReport.tsx
+│       ├── EventNotification.tsx
+│       └── EndGame.tsx
+├── App.tsx
+└── main.tsx
 ```
 
-### LLM Integration Point
+### Backend (Node.js + Express)
 
-`src/game/ai.js` exports `generateLLMReport()` which currently returns mock data. To integrate a real LLM:
-
-```javascript
-export async function generateLLMReport(state, decisions, events) {
-  const response = await fetch('/api/generate-report', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ state, decisions, events })
-  })
-  return await response.json()
-}
+```
+server/
+├── index.ts                   # Express server entry
+├── db.ts                      # SQLite database setup
+├── routes/
+│   ├── auth.ts                # JWT authentication
+│   ├── game.ts                # Game CRUD + history
+│   ├── ai.ts                  # LLM API proxy
+│   └── leaderboard.ts         # Score rankings
+└── tsconfig.json
 ```
 
-The mock version uses template strings with variable substitution — designed to be a drop-in replacement for LLM output.
+### Database Schema
+
+```sql
+users (id, username, password_hash, created_at)
+games (id, user_id, company_name, industry, state, is_active, ...)
+game_history (id, game_id, month, state_snapshot, decisions, events, ...)
+leaderboard (id, user_id, game_id, company_name, score, result, ...)
+```
+
+### LLM Integration
+
+Frontend calls `POST /api/ai/report` which proxies to OpenAI API. Falls back to mock reports if API key is not configured.
 
 ### Decision System Features
 
@@ -421,3 +447,14 @@ The decision engine supports three advanced mechanisms:
 - Product Dev burn rate: +2 → +1
 
 **Impact**: Multiple strategies can now win (Research spam, Balanced growth, Partnerships, Low burn). Pure fundraising still can't win due to competition cap. Game is winnable but requires strategic decisions.
+
+### v1.3 — TypeScript + Backend
+**Changes**:
+- Migrated frontend to TypeScript with strict mode
+- Added Context + useReducer state management
+- Split game engine into modular files (calculator, validator, events, conditions, processor)
+- Added Express backend with SQLite
+- Added JWT authentication
+- Added game state persistence
+- Added OpenAI API integration for AI reports
+- Added leaderboard system
