@@ -122,6 +122,7 @@ mini-game-demo/
 | 📰 Industry News | Monthly market events |
 | ⚔️ Competitors | AI rivals that challenge you |
 | 🌳 Tech Tree | 10 technologies to research |
+| 📊 Quarterly Reports | Detailed analysis every 3 months |
 
 ## LLM Integration
 

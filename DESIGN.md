@@ -267,7 +267,74 @@ Each month, each event has an independent probability of triggering. Multiple ev
 
 ---
 
-## 8. Win/Lose Conditions
+## 8. Game Systems
+
+### 8.1 Achievement System 🏆
+14 milestones that track player progress and reward strategic play.
+
+| Achievement | Condition |
+|-------------|-----------|
+| First Step 👶 | Start your first company |
+| Fundraiser 💰 | Complete first fundraising round |
+| Century Club 👥 | Reach 100 users |
+| Half Way There 🎯 | Reach 50% product completion |
+| Product Master 💻 | Reach 80% product completion |
+| Hot Stuff 🔥 | Reach 50% market heat |
+| Viral Sensation 📱 | Reach 80% market heat |
+| Survivor 🛡️ | Survive for 12 months |
+| Veteran 🏅 | Survive for 24 months |
+| Millionaire 💎 | Accumulate $500K in funds |
+| Lean Machine ⚡ | Keep burn rate below 5 for 6 months |
+| People Person ❤️ | Keep morale above 80 for 6 months |
+| Underdog 🐕 | Win with less than $50K in final month |
+| Speedrun ⏱️ | Win in under 12 months |
+
+### 8.2 Industry News System 📰
+10 news items that affect market conditions each month.
+
+| News | Category | Effects |
+|------|----------|---------|
+| AI Investment Surge | Positive | Heat +8, Competition +5 |
+| Economic Slowdown | Negative | Heat -5, Users -10 |
+| New Tech Regulations | Negative | Product -5, Burn Rate +2 |
+| Tech Talent Shortage | Negative | Burn Rate +3, Morale -5 |
+| Partnership Season | Positive | Users +15, Heat +5 |
+| Open Source Movement | Neutral | Competition +8 |
+| Record Funding Quarter | Neutral | Heat +10, Competition +8 |
+| Industry Layoffs | Negative | Morale -8, Competition -5 |
+| Innovation Award | Positive | Heat +12, Product +5 |
+| Supply Chain Issues | Negative | Burn Rate +4 |
+
+### 8.3 Competitor AI ⚔️
+Dynamic competitors that spawn every 6 months (40% chance) with different strategies.
+
+| Strategy | Heat Impact | Competition Impact |
+|----------|-------------|-------------------|
+| Aggressive | -strength × 0.1 | +strength × 0.05 |
+| Balanced | -strength × 0.05 | +strength × 0.03 |
+| Conservative | -strength × 0.02 | +strength × 0.02 |
+
+**Scaling**: If player heat > 60, competitor effects are amplified (1.5× heat, 1.3× competition).
+
+### 8.4 Tech Tree 🌳
+10 technologies organized in 3 categories (Core, Growth, Efficiency) with prerequisite chains.
+
+**Core Path**: MVP → UI/UX → Mobile App / API Platform
+**Growth Path**: API Platform → AI Features / Enterprise → Global Expansion / Platform
+**Efficiency Path**: Analytics → Automation
+
+**Unlocking**: Costs funds, applies immediate effects, requires prerequisites.
+
+### 8.5 Quarterly Reports 📊
+Generated every 3 months with:
+- Executive summary of fund/user/product/morale changes
+- Key highlights (positive trends or warnings)
+- Recent achievements
+- Detailed trend analysis
+
+---
+
+## 9. Win/Lose Conditions
 
 ### Failure Conditions (checked first)
 | Condition | Reason |
@@ -533,3 +600,12 @@ The decision engine supports three advanced mechanisms:
 - Added storage stats display in game selector
 - Added AUTO_CLEANUP env var for server startup cleanup
 - Added deleteUserGameData function in db.ts
+
+### v1.9 — Quarterly Reports
+**Changes**:
+- Added quarterly report generation every 3 months
+- Created QuarterlyReportModal component for detailed quarterly analysis
+- Enhanced monthly report to show quarterly summaries when applicable
+- Added executive summary with fund/user/product/morale changes
+- Added key highlights section with trend analysis
+- Added recent achievements display in quarterly reports

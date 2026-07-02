@@ -1,4 +1,4 @@
-import type { Company, Decision, MonthResult, MonthlyReport, GameEvent } from '../types/game'
+import type { Company, Decision, MonthResult, MonthlyReport, GameEvent, QuarterlyReport } from '../types/game'
 import { GAME_CONFIG } from '../config/constants'
 import { EVENTS } from '../config/decisions'
 import { NEWS_ITEMS, triggerNews, type NewsItem } from '../config/news'
@@ -13,6 +13,46 @@ const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
 ]
+
+function generateQuarterlyReport(
+  company: Company,
+  fullHistory: Company[]
+): QuarterlyReport | null {
+  if (company.month % 3 !== 0) return null
+
+  const quarterMonths = fullHistory.slice(-3)
+  if (quarterMonths.length < 3) return null
+  const startMonth = quarterMonths[0]
+  const endMonth = company
+
+  const fundChange = endMonth.funds - startMonth.funds
+  const userChange = endMonth.users - startMonth.users
+  const productChange = endMonth.product - startMonth.product
+  const moraleChange = endMonth.teamMorale - startMonth.teamMorale
+
+  const highlights: string[] = []
+  if (fundChange > 50000) highlights.push(`Strong financial growth: +$${fundChange.toLocaleString()}`)
+  if (fundChange < -50000) highlights.push(`Financial decline: -$${Math.abs(fundChange).toLocaleString()}`)
+  if (userChange > 50) highlights.push(`Excellent user growth: +${userChange} users`)
+  if (userChange < -20) highlights.push(`User churn: ${userChange} users lost`)
+  if (productChange > 20) highlights.push(`Product breakthrough: +${productChange}% completion`)
+  if (moraleChange > 15) highlights.push(`Team morale soaring!`)
+  if (moraleChange < -15) highlights.push(`Warning: Team morale declining`)
+
+  if (highlights.length === 0) {
+    highlights.push('Steady progress across all metrics')
+  }
+
+  const quarter = Math.ceil(company.month / 3)
+  const year = Math.floor((company.month - 1) / 12) + 1
+
+  return {
+    month: company.month,
+    summary: `Q${quarter} Year ${year}: ${fundChange >= 0 ? 'Growth' : 'Challenge'} quarter with ${userChange >= 0 ? '+' : ''}${userChange} users and ${fundChange >= 0 ? '+' : ''}$${fundChange.toLocaleString()} funds change.`,
+    highlights,
+    achievements: company.unlockedAchievements?.slice(-3) || [],
+  }
+}
 
 function generateReport(
   before: Company,
@@ -77,7 +117,7 @@ function generateReport(
   }
 }
 
-export function processMonth(state: Company, decisions: Decision[]): MonthResult {
+export function processMonth(state: Company, decisions: Decision[], history: Company[] = []): MonthResult {
   let newState = { ...state }
 
   for (const decision of decisions) {
@@ -145,8 +185,11 @@ export function processMonth(state: Company, decisions: Decision[]): MonthResult
   newState.marketHeat = Math.max(0, Math.min(100, newState.marketHeat + competitorEffects.heatChange))
   newState.competition = Math.max(0, Math.min(100, newState.competition + competitorEffects.competitionChange))
 
-  const newAchievements = checkAchievements(newState, [], newState.unlockedAchievements || [])
+  const newAchievements = checkAchievements(newState, [...history, newState], newState.unlockedAchievements || [])
   newState.unlockedAchievements = [...(newState.unlockedAchievements || []), ...newAchievements.map(a => a.id)]
+
+  const quarterlyReport = generateQuarterlyReport(newState, [...history, newState])
+  newState.lastQuarterReport = quarterlyReport
 
   newState.month += 1
 

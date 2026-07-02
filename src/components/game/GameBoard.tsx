@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGameContext } from '../../context/GameContext'
 import { processMonth } from '../../engine/processor'
 import { Dashboard } from './Dashboard'
@@ -7,13 +7,15 @@ import { MonthlyReport } from './MonthlyReport'
 import { EventNotification } from './EventNotification'
 import { AchievementsPanel } from './AchievementsPanel'
 import { TechTreePanel } from './TechTreePanel'
+import { QuarterlyReportModal } from './QuarterlyReportModal'
 import { GameBoardSkeleton } from '../ui/Skeleton'
 import { GameErrorBoundary } from '../ui/GameErrorBoundary'
-import type { Decision } from '../../types/game'
+import type { Decision, QuarterlyReport } from '../../types/game'
 
 export function GameBoard() {
   const { state, dispatch, saveGame } = useGameContext()
   const { company, currentReport, currentEvent, turn, processing } = state
+  const [quarterlyReport, setQuarterlyReport] = useState<QuarterlyReport | null>(null)
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -45,8 +47,14 @@ export function GameBoard() {
     dispatch({ type: 'PROCESS_MONTH', decisions })
 
     setTimeout(() => {
-      const result = processMonth(company, decisions)
+      const result = processMonth(company, decisions, state.history)
       dispatch({ type: 'MONTH_PROCESSED', result })
+
+      if (result.state.lastQuarterReport !== null && result.state.lastQuarterReport !== undefined) {
+        setTimeout(() => {
+          setQuarterlyReport(result.state.lastQuarterReport!)
+        }, 1200)
+      }
 
       if (result.endCondition) {
         setTimeout(() => {
@@ -78,6 +86,10 @@ export function GameBoard() {
 
   const handleCloseReport = () => {
     dispatch({ type: 'CLOSE_REPORT' })
+  }
+
+  const handleCloseQuarterlyReport = () => {
+    setQuarterlyReport(null)
   }
 
   if (!company) {
@@ -142,9 +154,14 @@ export function GameBoard() {
         </div>
       </div>
 
-      {currentReport && (
+      {currentReport && !quarterlyReport && (
         <GameErrorBoundary name="MonthlyReport">
           <MonthlyReport report={currentReport.report} onClose={handleCloseReport} />
+        </GameErrorBoundary>
+      )}
+      {quarterlyReport && (
+        <GameErrorBoundary name="QuarterlyReport">
+          <QuarterlyReportModal report={quarterlyReport} onClose={handleCloseQuarterlyReport} />
         </GameErrorBoundary>
       )}
       {currentEvent && <EventNotification event={currentEvent} />}
