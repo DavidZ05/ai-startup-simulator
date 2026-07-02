@@ -165,34 +165,51 @@ export function GameBoard() {
   const techCount = company.unlockedTech?.length || 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f0f23] via-[#1a1a3e] to-[#0f0f23]">
-      <div className="bg-[#12122a]/80 backdrop-blur-xl border-b border-slate-700/50 sticky top-0 z-30">
+    <div className="min-h-screen bg-[#0a0a1a]">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-indigo-500/5 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative bg-[#12122a]/80 backdrop-blur-2xl border-b border-white/5 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="text-xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-              {company.name}
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <span className="text-sm">🚀</span>
+              </div>
+              <div className="text-lg font-black bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+                {company.name}
+              </div>
             </div>
-            <div className="hidden md:flex items-center gap-2 text-xs text-slate-400">
-              <span className="px-2 py-1 bg-slate-700/50 rounded-lg">{company.industry}</span>
-              <span className="px-2 py-1 bg-slate-700/50 rounded-lg">🌍 {marketCount}</span>
-              <span className="px-2 py-1 bg-slate-700/50 rounded-lg">👥 {employeeCount}</span>
-              <span className="px-2 py-1 bg-slate-700/50 rounded-lg">🌳 {techCount}</span>
+            <div className="hidden md:flex items-center gap-1.5">
+              {[
+                { icon: '🌍', value: marketCount },
+                { icon: '👥', value: employeeCount },
+                { icon: '🌳', value: techCount },
+              ].map((stat, i) => (
+                <div key={i} className="flex items-center gap-1 px-2 py-1 bg-white/5 rounded-lg border border-white/5">
+                  <span className="text-[10px]">{stat.icon}</span>
+                  <span className="text-[10px] font-semibold text-slate-400">{stat.value}</span>
+                </div>
+              ))}
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="text-right">
-              <div className="text-[10px] text-slate-400 uppercase tracking-wider">Month</div>
+              <div className="text-[9px] text-slate-500 uppercase tracking-widest">Month</div>
               <div className="text-sm font-bold text-white">{currentMonthName} Y{currentYear}</div>
             </div>
+            <div className="w-px h-8 bg-white/10" />
             <div className="text-right">
-              <div className="text-[10px] text-slate-400 uppercase tracking-wider">Round</div>
+              <div className="text-[9px] text-slate-500 uppercase tracking-widest">Round</div>
               <div className="text-sm font-bold text-indigo-400">{turn}</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="relative max-w-7xl mx-auto px-4 py-5">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
           <div className="lg:col-span-3 space-y-4">
             <GameErrorBoundary name="Dashboard">

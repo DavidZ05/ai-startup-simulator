@@ -42,30 +42,45 @@ export function CreateCompany() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#0f0f23] via-[#1a1a3e] to-[#0f0f23]">
-      <div className="w-full max-w-2xl animate-fade-in">
-        <div className="text-center mb-10">
-          <div className="text-6xl mb-4">🚀</div>
-          <h1 className="text-5xl font-black bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent mb-3">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#0a0a1a] overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative w-full max-w-lg animate-fade-in">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-2xl shadow-indigo-500/30 mb-4">
+            <span className="text-4xl">🚀</span>
+          </div>
+          <h1 className="text-4xl font-black bg-gradient-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent mb-2">
             AI Startup Simulator
           </h1>
-          <p className="text-lg text-slate-400">Build the next unicorn from scratch</p>
+          <p className="text-slate-400 text-sm">Build the next unicorn from scratch</p>
         </div>
 
-        <div className="bg-[#1e1e3a]/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-8 shadow-2xl">
-          <div className="flex items-center justify-center gap-2 mb-8">
+        <div className="bg-[#12122a]/90 backdrop-blur-2xl rounded-3xl border border-white/5 p-6 shadow-2xl shadow-black/50">
+          <div className="flex items-center justify-center gap-3 mb-8">
             {[1, 2, 3].map(s => (
-              <div key={s} className="flex items-center gap-2">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+              <div key={s} className="flex items-center gap-3">
+                <div className={`relative w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-500 ${
                   step >= s
-                    ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/50'
-                    : 'bg-slate-700 text-slate-400'
+                    ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/50'
+                    : 'bg-white/5 text-slate-500 border border-white/10'
                 }`}>
-                  {s}
+                  {step > s ? (
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : s}
+                  {step === s && (
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 animate-ping opacity-20" />
+                  )}
                 </div>
                 {s < 3 && (
-                  <div className={`w-16 h-1 rounded transition-all duration-300 ${
-                    step > s ? 'bg-indigo-500' : 'bg-slate-700'
+                  <div className={`w-12 h-0.5 rounded transition-all duration-500 ${
+                    step > s ? 'bg-gradient-to-r from-indigo-500 to-purple-500' : 'bg-white/10'
                   }`} />
                 )}
               </div>
@@ -73,27 +88,27 @@ export function CreateCompany() {
           </div>
 
           {step === 1 && (
-            <div className="animate-fade-in space-y-6">
+            <div className="animate-fade-in space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Startup Name</label>
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Startup Name</label>
                 <input
                   type="text"
                   value={company.name}
                   onChange={(e) => setCompany({ ...company, name: e.target.value })}
-                  placeholder="e.g. NeuralFlow, QuantumAI..."
-                  className="w-full px-4 py-3 bg-[#12122a] border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-lg"
+                  placeholder="NeuralFlow, QuantumAI..."
+                  className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all text-base"
                   maxLength={30}
                 />
-                <p className="text-xs text-slate-500 mt-1">{company.name.length}/30 characters</p>
+                <p className="text-[10px] text-slate-600 mt-1.5 text-right">{company.name.length}/30</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Target Customers</label>
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Target Customers</label>
                 <input
                   type="text"
                   value={company.targetUsers}
                   onChange={(e) => setCompany({ ...company, targetUsers: e.target.value })}
-                  placeholder="e.g. Small businesses, Students, Enterprise..."
-                  className="w-full px-4 py-3 bg-[#12122a] border border-slate-600 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-lg"
+                  placeholder="Small businesses, Students..."
+                  className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all text-base"
                   maxLength={50}
                 />
               </div>
@@ -102,21 +117,21 @@ export function CreateCompany() {
 
           {step === 2 && (
             <div className="animate-fade-in">
-              <label className="block text-sm font-medium text-slate-300 mb-4">Select Industry</label>
-              <div className="grid grid-cols-2 gap-3">
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Select Industry</label>
+              <div className="grid grid-cols-2 gap-2.5">
                 {INDUSTRIES.map(ind => (
                   <button
                     key={ind.id}
                     onClick={() => setCompany({ ...company, industry: ind.id })}
-                    className={`p-4 rounded-xl border-2 transition-all duration-200 text-left hover:scale-[1.02] ${
+                    className={`p-3.5 rounded-xl border transition-all duration-300 text-left group ${
                       company.industry === ind.id
-                        ? 'border-indigo-500 bg-indigo-500/10 shadow-lg shadow-indigo-500/20'
-                        : 'border-slate-600 bg-[#12122a] hover:border-slate-500'
+                        ? 'border-indigo-500/50 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 shadow-lg shadow-indigo-500/20'
+                        : 'border-white/5 bg-white/[0.02] hover:bg-white/5 hover:border-white/10'
                     }`}
                   >
-                    <div className="text-2xl mb-1">{ind.emoji}</div>
-                    <div className="font-semibold text-white">{ind.name}</div>
-                    <div className="text-xs text-slate-400">{ind.description}</div>
+                    <div className="text-2xl mb-1.5 group-hover:scale-110 transition-transform">{ind.emoji}</div>
+                    <div className="font-semibold text-white text-sm">{ind.name}</div>
+                    <div className="text-[10px] text-slate-500 mt-0.5">{ind.description}</div>
                   </button>
                 ))}
               </div>
@@ -125,41 +140,37 @@ export function CreateCompany() {
 
           {step === 3 && (
             <div className="animate-fade-in">
-              <label className="block text-sm font-medium text-slate-300 mb-4">Initial Funding</label>
-              <div className="bg-[#12122a] rounded-xl p-6 border border-slate-600">
-                <div className="text-center mb-6">
-                  <div className="text-5xl font-black text-emerald-400 mb-2">
+              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Initial Funding</label>
+              <div className="bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 rounded-2xl p-5 border border-emerald-500/20">
+                <div className="text-center mb-5">
+                  <div className="text-4xl font-black text-emerald-400 mb-1">
                     ${GAME_CONFIG.INITIAL_FUNDS.toLocaleString()}
                   </div>
-                  <p className="text-slate-400">Seed Capital</p>
+                  <p className="text-xs text-emerald-400/60">Seed Capital</p>
                 </div>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="bg-slate-800/50 rounded-lg p-3">
-                    <div className="text-slate-400">Monthly Burn</div>
-                    <div className="text-white font-semibold">~$12,000</div>
-                  </div>
-                  <div className="bg-slate-800/50 rounded-lg p-3">
-                    <div className="text-slate-400">Runway</div>
-                    <div className="text-white font-semibold">~16 months</div>
-                  </div>
-                  <div className="bg-slate-800/50 rounded-lg p-3">
-                    <div className="text-slate-400">Team Size</div>
-                    <div className="text-white font-semibold">3 people</div>
-                  </div>
-                  <div className="bg-slate-800/50 rounded-lg p-3">
-                    <div className="text-slate-400">Initial Users</div>
-                    <div className="text-white font-semibold">10 beta users</div>
-                  </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {[
+                    { label: 'Monthly Burn', value: '~$12,000', icon: '🔥' },
+                    { label: 'Runway', value: '~16 months', icon: '⏱️' },
+                    { label: 'Team Size', value: '3 people', icon: '👥' },
+                    { label: 'Initial Users', value: '10 beta', icon: '🎯' },
+                  ].map((item, i) => (
+                    <div key={i} className="bg-black/20 rounded-xl p-3 text-center">
+                      <div className="text-lg mb-1">{item.icon}</div>
+                      <div className="text-[10px] text-slate-500">{item.label}</div>
+                      <div className="text-xs font-semibold text-white mt-0.5">{item.value}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           )}
 
-          <div className="flex justify-between mt-8">
+          <div className="flex justify-between mt-6">
             {step > 1 ? (
               <button
                 onClick={() => setStep(step - 1)}
-                className="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-medium transition-all duration-200 active:scale-[0.98]"
+                className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-sm transition-all duration-200 active:scale-[0.98]"
               >
                 ← Back
               </button>
@@ -170,14 +181,14 @@ export function CreateCompany() {
               <button
                 onClick={() => setStep(step + 1)}
                 disabled={!canProceed}
-                className="px-8 py-3 rounded-xl bg-indigo-500 hover:bg-indigo-400 disabled:bg-slate-600 disabled:text-slate-400 text-white font-semibold transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 disabled:shadow-none active:scale-[0.98]"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 disabled:from-white/5 disabled:to-white/5 disabled:text-slate-600 text-white font-semibold text-sm transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 disabled:shadow-none active:scale-[0.98]"
               >
                 Next →
               </button>
             ) : (
               <button
                 onClick={handleStart}
-                className="px-8 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-bold text-lg transition-all duration-200 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 glow-border active:scale-[0.98]"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-bold text-sm transition-all duration-200 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 active:scale-[0.98]"
               >
                 🚀 Launch Startup
               </button>
@@ -185,8 +196,8 @@ export function CreateCompany() {
           </div>
         </div>
 
-        <p className="text-center text-slate-600 text-sm mt-6">
-          Each round = 1 month · 3 decisions per month · Don't run out of money!
+        <p className="text-center text-slate-600 text-xs mt-5">
+          1 round = 1 month · 3 decisions per month
         </p>
       </div>
     </div>
