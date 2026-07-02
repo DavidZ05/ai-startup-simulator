@@ -3,6 +3,26 @@ import type { Company, GamePhase, EndCondition, Decision } from '../types/game'
 import { processMonth } from '../engine/processor'
 import { api } from '../services/api'
 
+const STORAGE_PREFIX = 'startup_sim_'
+
+function saveToLocal(key: string, data: unknown): boolean {
+  try {
+    localStorage.setItem(`${STORAGE_PREFIX}${key}`, JSON.stringify(data))
+    return true
+  } catch {
+    return false
+  }
+}
+
+function loadFromLocal(key: string): unknown {
+  try {
+    const data = localStorage.getItem(`${STORAGE_PREFIX}${key}`)
+    return data ? JSON.parse(data) : null
+  } catch {
+    return null
+  }
+}
+
 export interface GameState {
   phase: GamePhase
   company: Company | null
@@ -116,14 +136,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const saveGame = useCallback(async () => {
     if (!state.gameId || !state.company) return
+    const gameData = {
+      company: state.company,
+      history: state.history,
+      turn: state.turn,
+    }
     try {
-      await api.updateGame(state.gameId, {
-        company: state.company,
-        history: state.history,
-        turn: state.turn,
-      })
-    } catch (err) {
-      console.error('Failed to save game:', err)
+      await api.updateGame(state.gameId, gameData)
+    } catch {
+      saveToLocal(`game_${state.gameId}`, gameData)
     }
   }, [state.gameId, state.company, state.history, state.turn])
 
@@ -132,8 +153,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const loadGame = useCallback(async (gameId: number) => {
-    const game = await api.getGame(gameId) as any
-    const savedState = game.state
+    let savedState: any
+    try {
+      const game = await api.getGame(gameId)
+      savedState = game.state
+    } catch {
+      savedState = loadFromLocal(`game_${gameId}`)
+      if (!savedState) {
+        throw new Error('Game not found')
+      }
+    }
     dispatch({
       type: 'LOAD_GAME',
       state: {

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { GameProvider, useGameContext } from './context/GameContext'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
+import { OfflineIndicator } from './components/ui/OfflineIndicator'
 import { LoginForm } from './components/auth/LoginForm'
 import { GameSelector } from './components/game/GameSelector'
 import { CreateCompany } from './components/game/CreateCompany'
@@ -83,6 +84,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
+        <OfflineIndicator />
         <AppContent />
       </AuthProvider>
     </ErrorBoundary>
