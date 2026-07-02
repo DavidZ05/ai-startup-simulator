@@ -1,7 +1,7 @@
 import type { Company, Decision, MonthResult, MonthlyReport, GameEvent, QuarterlyReport } from '../types/game'
 import { GAME_CONFIG } from '../config/constants'
 import { EVENTS } from '../config/decisions'
-import { NEWS_ITEMS, triggerNews, type NewsItem } from '../config/news'
+import { triggerNews, type NewsItem } from '../config/news'
 import { generateCompetitor, competitorAction, type Competitor } from '../config/competitors'
 import { checkAchievements } from '../config/achievements'
 import { applyEffects, getDecisionCost } from './calculator'

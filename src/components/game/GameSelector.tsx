@@ -47,7 +47,7 @@ export function GameSelector({ onSelectGame, onNewGame }: GameSelectorProps) {
       setGames([])
       setShowDeleteConfirm(false)
       alert('All game data deleted')
-    } catch (err) {
+    } catch {
       alert('Failed to delete data')
     }
   }
@@ -58,7 +58,7 @@ export function GameSelector({ onSelectGame, onNewGame }: GameSelectorProps) {
       const stats = await api.getStorageStats()
       setStorageStats({ games: stats.games, totalSize: stats.database.totalSize })
       alert('Storage cleaned up')
-    } catch (err) {
+    } catch {
       alert('Cleanup failed')
     }
   }

@@ -1,4 +1,4 @@
-import type { Company } from '../types/game'
+
 
 export interface Competitor {
   id: string

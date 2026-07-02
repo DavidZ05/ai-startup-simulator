@@ -609,3 +609,18 @@ The decision engine supports three advanced mechanisms:
 - Added executive summary with fund/user/product/morale changes
 - Added key highlights section with trend analysis
 - Added recent achievements display in quarterly reports
+
+### v1.10 — Loading Skeletons & Offline Optimization
+**Changes**:
+- Enhanced Skeleton component with variant support (default/circular/rectangular)
+- Added TechTreeSkeleton, AchievementsSkeleton, LoginSkeleton, GameSelectorSkeleton
+- Updated GameBoardSkeleton to match current 3-column layout
+- Added PWA manifest (manifest.json) for home screen installation
+- Created service worker (sw.js) with 3-tier caching strategy:
+  - Cache-first for static assets
+  - Network-first for API calls
+  - Stale-while-revalidate for navigation
+- Added OfflineIndicator component with online/offline detection
+- Created useOfflineStorage hook for local storage fallback
+- Updated GameContext to save/load games offline when API unavailable
+- Fixed lint warnings (unused imports, unused catch parameters)

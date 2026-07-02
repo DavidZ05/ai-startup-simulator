@@ -1,5 +1,4 @@
 import type { Company, GamePhase, EndCondition, Decision } from '../types/game'
-import { GAME_CONFIG } from '../config/constants'
 import { processMonth } from '../engine/processor'
 
 export interface GameState {
