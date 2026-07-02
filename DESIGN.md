@@ -524,3 +524,12 @@ The decision engine supports three advanced mechanisms:
 - Added tech tree (10 technologies)
 - Updated Company type with new fields
 - Updated monthly report with news/competitor/achievement info
+
+### v1.8 — Data Management
+**Changes**:
+- Added cleanup script (scripts/cleanup.sh)
+- Added auto-cleanup toggle in game selector (default off)
+- Added delete all user data button with confirmation
+- Added storage stats display in game selector
+- Added AUTO_CLEANUP env var for server startup cleanup
+- Added deleteUserGameData function in db.ts
