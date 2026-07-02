@@ -19,7 +19,7 @@ export function MonthlyReport({ report, onClose }: MonthlyReportProps) {
           </div>
         </div>
 
-        <div className="p-6 space-y-5 max-h-[60vh] overflow-y-auto">
+        <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
           {report.decisionSummary && (
             <div>
               <h4 className="text-sm font-semibold text-slate-300 mb-2 flex items-center gap-2">
@@ -28,6 +28,18 @@ export function MonthlyReport({ report, onClose }: MonthlyReportProps) {
               <div className="bg-[#12122a] rounded-xl p-3 text-sm text-slate-300 whitespace-pre-line">
                 {report.decisionSummary}
               </div>
+            </div>
+          )}
+
+          {report.newsSummary && (
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3">
+              <p className="text-xs text-amber-400">{report.newsSummary}</p>
+            </div>
+          )}
+
+          {report.competitorSummary && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3">
+              <p className="text-xs text-red-400">{report.competitorSummary}</p>
             </div>
           )}
 
@@ -65,6 +77,17 @@ export function MonthlyReport({ report, onClose }: MonthlyReportProps) {
               </div>
             </div>
           </div>
+
+          {report.newAchievements && report.newAchievements.length > 0 && (
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3">
+              <h4 className="text-xs font-semibold text-amber-400 mb-2">🎉 New Achievements!</h4>
+              <div className="flex flex-wrap gap-2">
+                {report.newAchievements.map((achievement, i) => (
+                  <span key={i} className="text-xs text-amber-300">{achievement}</span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {report.highlights && (
             <div>

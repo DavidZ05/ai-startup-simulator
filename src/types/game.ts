@@ -14,6 +14,24 @@ export interface Company {
   maxDecisions: number
   fundraisingCount: number
   cooldowns: Record<string, number>
+  unlockedAchievements?: string[]
+  unlockedTech?: string[]
+  competitors?: CompetitorState[]
+  lastQuarterReport?: QuarterlyReport | null
+}
+
+export interface CompetitorState {
+  id: string
+  name: string
+  strength: number
+  strategy: 'aggressive' | 'balanced' | 'conservative'
+}
+
+export interface QuarterlyReport {
+  month: number
+  summary: string
+  highlights: string[]
+  achievements: string[]
 }
 
 export interface DecisionEffect {
@@ -64,6 +82,8 @@ export interface MonthlyReport {
   period: string
   decisionSummary: string
   eventSummary: string
+  newsSummary: string
+  competitorSummary: string
   fundingStatus: string
   moraleStatus: string
   productStatus: string
@@ -72,6 +92,7 @@ export interface MonthlyReport {
   burnCost: number
   revenue: number
   userGrowth: number
+  newAchievements: string[]
 }
 
 export interface MonthResult {

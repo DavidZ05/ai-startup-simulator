@@ -515,3 +515,12 @@ The decision engine supports three advanced mechanisms:
 - Added loading skeleton components (Dashboard, DecisionPanel, GameBoard)
 - Added component-level error boundaries (GameErrorBoundary)
 - Updated README with test instructions
+
+### v1.7 — New Features
+**Changes**:
+- Added achievement system (14 milestones)
+- Added industry news system (10 news types)
+- Added competitor AI (3 strategies)
+- Added tech tree (10 technologies)
+- Updated Company type with new fields
+- Updated monthly report with news/competitor/achievement info

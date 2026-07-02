@@ -1,6 +1,9 @@
-import type { Company, Decision, MonthResult, MonthlyReport } from '../types/game'
+import type { Company, Decision, MonthResult, MonthlyReport, GameEvent } from '../types/game'
 import { GAME_CONFIG } from '../config/constants'
 import { EVENTS } from '../config/decisions'
+import { NEWS_ITEMS, triggerNews, type NewsItem } from '../config/news'
+import { generateCompetitor, competitorAction, type Competitor } from '../config/competitors'
+import { checkAchievements } from '../config/achievements'
 import { applyEffects, getDecisionCost } from './calculator'
 import { checkCooldown, checkRequirements } from './validator'
 import { triggerRandomEvents } from './events'
@@ -11,9 +14,21 @@ const MONTH_NAMES = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ]
 
-function generateReport(before: Company, after: Company, decisions: Decision[], events: { title: string; description: string }[]): MonthlyReport {
+function generateReport(
+  before: Company,
+  after: Company,
+  decisions: Decision[],
+  events: GameEvent[],
+  news: NewsItem | null,
+  competitor: Competitor | null,
+  newAchievements: string[]
+): MonthlyReport {
   const decisionSummary = decisions.map(d => `• ${d.emoji} ${d.name}`).join('\n')
   const eventSummary = events.map(e => `${e.title}: ${e.description}`).join('\n')
+  const newsSummary = news ? `📰 ${news.title}: ${news.content}` : ''
+  const competitorSummary = competitor
+    ? `⚔️ New competitor: ${competitor.name} (${competitor.strategy})`
+    : ''
 
   const fundingStatus = after.funds > 200000 ? 'Strong' :
     after.funds > 100000 ? 'Moderate' :
@@ -32,6 +47,8 @@ function generateReport(before: Company, after: Company, decisions: Decision[], 
   if (after.teamMorale < before.teamMorale - 10) highlights.push('Warning: Team morale dropping')
   if (after.funds < 50000) highlights.push('⚠️ Cash runway critical!')
   if (after.product > 60) highlights.push('Product is maturing nicely')
+  if (news && news.category === 'positive') highlights.push(`Good news: ${news.title}`)
+  if (competitor) highlights.push(`New rival: ${competitor.name}`)
 
   const insights: string[] = [
     after.burnRate > 30 ? 'High burn rate is unsustainable. Consider cost optimization.' : '',
@@ -46,6 +63,8 @@ function generateReport(before: Company, after: Company, decisions: Decision[], 
     period: `Month ${after.month - 1}`,
     decisionSummary,
     eventSummary: eventSummary || 'No major events this month.',
+    newsSummary,
+    competitorSummary,
     fundingStatus,
     moraleStatus,
     productStatus,
@@ -54,6 +73,7 @@ function generateReport(before: Company, after: Company, decisions: Decision[], 
     burnCost: Math.round(after.burnRate * GAME_CONFIG.BURN_COST_MULTIPLIER),
     revenue: after.revenue,
     userGrowth: after.users - before.users,
+    newAchievements,
   }
 }
 
@@ -106,6 +126,28 @@ export function processMonth(state: Company, decisions: Decision[]): MonthResult
     newState = applyEffects(newState, event.effects)
   }
 
+  const news = triggerNews()
+  if (news) {
+    newState = applyEffects(newState, news.effects)
+  }
+
+  const newCompetitor = generateCompetitor(newState.month)
+  if (newCompetitor) {
+    newState.competitors = [...(newState.competitors || []), newCompetitor]
+  }
+
+  let competitorEffects = { heatChange: 0, competitionChange: 0 }
+  for (const comp of newState.competitors || []) {
+    const effects = competitorAction(comp, newState.marketHeat)
+    competitorEffects.heatChange += effects.heatChange
+    competitorEffects.competitionChange += effects.competitionChange
+  }
+  newState.marketHeat = Math.max(0, Math.min(100, newState.marketHeat + competitorEffects.heatChange))
+  newState.competition = Math.max(0, Math.min(100, newState.competition + competitorEffects.competitionChange))
+
+  const newAchievements = checkAchievements(newState, [], newState.unlockedAchievements || [])
+  newState.unlockedAchievements = [...(newState.unlockedAchievements || []), ...newAchievements.map(a => a.id)]
+
   newState.month += 1
 
   const endCondition = getEndCondition(newState)
@@ -116,7 +158,7 @@ export function processMonth(state: Company, decisions: Decision[]): MonthResult
   return {
     state: newState,
     events,
-    report: generateReport(state, newState, decisions, events),
+    report: generateReport(state, newState, decisions, events, news, newCompetitor, newAchievements.map(a => `${a.emoji} ${a.name}`)),
     endCondition,
     period: `${monthName}, Year ${year}`,
   }

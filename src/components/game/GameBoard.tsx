@@ -5,6 +5,8 @@ import { Dashboard } from './Dashboard'
 import { DecisionPanel } from './DecisionPanel'
 import { MonthlyReport } from './MonthlyReport'
 import { EventNotification } from './EventNotification'
+import { AchievementsPanel } from './AchievementsPanel'
+import { TechTreePanel } from './TechTreePanel'
 import { GameBoardSkeleton } from '../ui/Skeleton'
 import { GameErrorBoundary } from '../ui/GameErrorBoundary'
 import type { Decision } from '../../types/game'
@@ -54,6 +56,26 @@ export function GameBoard() {
     }, 800)
   }
 
+  const handleUnlockTech = (techId: string, cost: number) => {
+    if (!company || company.funds < cost) return
+
+    import('../../engine/calculator').then(({ applyEffects }) => {
+      import('../../config/techTree').then(({ TECH_TREE }) => {
+        const tech = TECH_TREE.find(t => t.id === techId)
+        if (!tech) return
+
+        const newState = {
+          ...company,
+          funds: company.funds - cost,
+          unlockedTech: [...(company.unlockedTech || []), techId],
+        }
+
+        const updatedCompany = applyEffects(newState, tech.effects)
+        dispatch({ type: 'LOAD_GAME', state: { ...state, company: updatedCompany } })
+      })
+    })
+  }
+
   const handleCloseReport = () => {
     dispatch({ type: 'CLOSE_REPORT' })
   }
@@ -95,18 +117,26 @@ export function GameBoard() {
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-4 xl:col-span-3">
+          <div className="lg:col-span-3 space-y-4">
             <GameErrorBoundary name="Dashboard">
               <Dashboard company={company} />
             </GameErrorBoundary>
+            <GameErrorBoundary name="Achievements">
+              <AchievementsPanel company={company} />
+            </GameErrorBoundary>
           </div>
-          <div className="lg:col-span-8 xl:col-span-9">
+          <div className="lg:col-span-6">
             <GameErrorBoundary name="DecisionPanel">
               <DecisionPanel
                 company={company}
                 onDecide={handleDecide}
                 disabled={processing}
               />
+            </GameErrorBoundary>
+          </div>
+          <div className="lg:col-span-3">
+            <GameErrorBoundary name="TechTree">
+              <TechTreePanel company={company} onUnlock={handleUnlockTech} />
             </GameErrorBoundary>
           </div>
         </div>

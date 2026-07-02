@@ -151,6 +151,15 @@ mini-game-demo/
 | 🔥 Market Heat | Brand visibility (drives user growth) |
 | ⚔️ Competition | Market competition (suppresses heat) |
 
+## New Features
+
+| Feature | Description |
+|---------|-------------|
+| 🏆 Achievements | 14 milestones to unlock |
+| 📰 Industry News | Monthly market events |
+| ⚔️ Competitors | AI rivals that challenge you |
+| 🌳 Tech Tree | 10 technologies to research |
+
 ## LLM Integration
 
 The game supports OpenAI API for AI-generated reports.
