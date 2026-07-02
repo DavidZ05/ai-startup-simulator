@@ -7,11 +7,13 @@ import aiRoutes from './routes/ai'
 import leaderboardRoutes from './routes/leaderboard'
 import storageRoutes from './routes/storage'
 import { rateLimiter } from './middleware/rateLimit'
+import { cleanupOldGames } from './db'
 
 dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 3001
+const AUTO_CLEANUP = process.env.AUTO_CLEANUP === 'true'
 
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
@@ -30,6 +32,11 @@ app.use('/api/storage', storageRoutes)
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
+
+if (AUTO_CLEANUP) {
+  cleanupOldGames(90)
+  console.log('🧹 Auto-cleanup: removed games older than 90 days')
+}
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`)

@@ -84,6 +84,18 @@ export function cleanupOldGames(maxAgeDays: number = 90) {
   db.prepare('DELETE FROM game_history WHERE game_id NOT IN (SELECT id FROM games)').run()
 }
 
+export function deleteUserGameData(userId: number) {
+  const gameIds = db.prepare('SELECT id FROM games WHERE user_id = ?').all(userId) as any[]
+
+  if (gameIds.length > 0) {
+    const ids = gameIds.map(g => g.id)
+    db.prepare(`DELETE FROM game_history WHERE game_id IN (${ids.map(() => '?').join(',')})`).run(...ids)
+  }
+
+  db.prepare('DELETE FROM games WHERE user_id = ?').run(userId)
+  db.prepare('DELETE FROM leaderboard WHERE user_id = ?').run(userId)
+}
+
 export function getDbSize(): { tables: Record<string, number>; totalSize: string } {
   const tables: Record<string, number> = {}
   const rows = db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all() as any[]

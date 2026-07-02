@@ -129,6 +129,7 @@ mini-game-demo/
 |--------|----------|-------------|
 | GET | /api/storage/stats | Get storage stats |
 | POST | /api/storage/cleanup | Cleanup old games |
+| DELETE | /api/games/user/all | Delete all user data |
 
 ## How to Play
 

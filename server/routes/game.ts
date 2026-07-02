@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express'
-import db from '../db'
+import db, { deleteUserGameData } from '../db'
 import { authMiddleware } from './auth'
 import { validateGameState } from '../middleware/validateState'
 
@@ -106,6 +106,11 @@ router.delete('/:id', (req: AuthRequest, res: Response) => {
   }
 
   res.json({ success: true })
+})
+
+router.delete('/user/all', (req: AuthRequest, res: Response) => {
+  deleteUserGameData(req.userId!)
+  res.json({ success: true, message: 'All user data deleted' })
 })
 
 export default router

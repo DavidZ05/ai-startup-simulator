@@ -105,6 +105,22 @@ class ApiClient {
     })
   }
 
+  async deleteAllUserData() {
+    return this.request<{ success: boolean; message: string }>('/games/user/all', {
+      method: 'DELETE',
+    })
+  }
+
+  async getStorageStats() {
+    return this.request<{ games: number; historyEntries: number; database: { tables: Record<string, number>; totalSize: string } }>('/storage/stats')
+  }
+
+  async cleanupStorage() {
+    return this.request<{ success: boolean; message: string }>('/storage/cleanup', {
+      method: 'POST',
+    })
+  }
+
   async generateReport(state: unknown, decisions: unknown[], events: unknown[]) {
     return this.request<{ report: string }>('/ai/report', {
       method: 'POST',

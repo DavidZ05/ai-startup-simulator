@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useGameContext } from '../../context/GameContext'
 import { useAuth } from '../../context/AuthContext'
+import { api } from '../../services/api'
 
 interface GameSelectorProps {
   onSelectGame: (gameId: number) => void
@@ -12,19 +13,54 @@ export function GameSelector({ onSelectGame, onNewGame }: GameSelectorProps) {
   const { user, logout } = useAuth()
   const [games, setGames] = useState<Array<{ id: number; company_name: string; industry: string; updated_at: string }>>([])
   const [loading, setLoading] = useState(true)
+  const [autoCleanup, setAutoCleanup] = useState(() => {
+    return localStorage.getItem('auto_cleanup') === 'true'
+  })
+  const [storageStats, setStorageStats] = useState<{ games: number; totalSize: string } | null>(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   useEffect(() => {
     loadGames().then(g => {
       setGames(g)
       setLoading(false)
     }).catch(() => setLoading(false))
+
+    api.getStorageStats().then(stats => {
+      setStorageStats({ games: stats.games, totalSize: stats.database.totalSize })
+    }).catch(() => {})
   }, [loadGames])
+
+  useEffect(() => {
+    localStorage.setItem('auto_cleanup', String(autoCleanup))
+  }, [autoCleanup])
 
   const handleDelete = async (e: React.MouseEvent, gameId: number) => {
     e.stopPropagation()
     if (!confirm('Delete this game?')) return
     await deleteGame(gameId)
     setGames(games.filter(g => g.id !== gameId))
+  }
+
+  const handleDeleteAll = async () => {
+    try {
+      await api.deleteAllUserData()
+      setGames([])
+      setShowDeleteConfirm(false)
+      alert('All game data deleted')
+    } catch (err) {
+      alert('Failed to delete data')
+    }
+  }
+
+  const handleCleanup = async () => {
+    try {
+      await api.cleanupStorage()
+      const stats = await api.getStorageStats()
+      setStorageStats({ games: stats.games, totalSize: stats.database.totalSize })
+      alert('Storage cleaned up')
+    } catch (err) {
+      alert('Cleanup failed')
+    }
   }
 
   return (
@@ -47,6 +83,41 @@ export function GameSelector({ onSelectGame, onNewGame }: GameSelectorProps) {
             >
               Sign out
             </button>
+          </div>
+
+          {storageStats && (
+            <div className="mb-4 p-3 bg-slate-800/50 rounded-xl flex items-center justify-between text-xs">
+              <span className="text-slate-400">
+                {storageStats.games} games · {storageStats.totalSize}
+              </span>
+              <button
+                onClick={handleCleanup}
+                className="text-indigo-400 hover:text-indigo-300 transition-colors"
+              >
+                Clean up
+              </button>
+            </div>
+          )}
+
+          <div className="mb-4 p-3 bg-slate-800/30 rounded-xl">
+            <label className="flex items-center justify-between cursor-pointer">
+              <div>
+                <div className="text-sm text-white">Auto-cleanup</div>
+                <div className="text-xs text-slate-400">Delete games older than 90 days</div>
+              </div>
+              <div
+                onClick={() => setAutoCleanup(!autoCleanup)}
+                className={`w-10 h-6 rounded-full transition-colors ${
+                  autoCleanup ? 'bg-indigo-500' : 'bg-slate-600'
+                }`}
+              >
+                <div
+                  className={`w-4 h-4 bg-white rounded-full transition-transform mt-1 ${
+                    autoCleanup ? 'translate-x-5' : 'translate-x-1'
+                  }`}
+                />
+              </div>
+            </label>
           </div>
 
           {loading ? (
@@ -94,6 +165,37 @@ export function GameSelector({ onSelectGame, onNewGame }: GameSelectorProps) {
               >
                 + New Game
               </button>
+            </div>
+          )}
+
+          {games.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-slate-700/50">
+              {showDeleteConfirm ? (
+                <div className="space-y-2">
+                  <p className="text-xs text-red-400 text-center">This will delete ALL your game data. Are you sure?</p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setShowDeleteConfirm(false)}
+                      className="flex-1 py-2 text-xs bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleDeleteAll}
+                      className="flex-1 py-2 text-xs bg-red-500 hover:bg-red-400 text-white rounded-lg transition-colors"
+                    >
+                      Delete Everything
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="w-full text-xs text-slate-500 hover:text-red-400 transition-colors"
+                >
+                  Delete all my data
+                </button>
+              )}
             </div>
           )}
         </div>
