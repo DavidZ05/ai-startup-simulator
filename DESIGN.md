@@ -357,7 +357,10 @@ src/
 │   ├── GameContext.tsx         # Game state context
 │   └── AuthContext.tsx         # Auth state context
 ├── components/
-│   ├── ui/ErrorBoundary.tsx    # Error handling
+│   ├── ui/
+│   │   ├── ErrorBoundary.tsx    # Global error handling
+│   │   ├── GameErrorBoundary.tsx # Component-level error handling
+│   │   └── Skeleton.tsx         # Loading skeleton components
 │   ├── auth/LoginForm.tsx      # Login/Register UI
 │   └── game/                   # Game UI components
 ├── App.tsx
@@ -505,3 +508,10 @@ The decision engine supports three advanced mechanisms:
 - Fixed Request import in leaderboard and storage routes
 - Fixed db.ts type annotation for better-sqlite3
 - Removed broken start.ts file
+
+### v1.6 — Quality Assurance
+**Changes**:
+- Added Vitest unit tests (38 tests covering engine logic)
+- Added loading skeleton components (Dashboard, DecisionPanel, GameBoard)
+- Added component-level error boundaries (GameErrorBoundary)
+- Updated README with test instructions

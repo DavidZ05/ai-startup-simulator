@@ -110,6 +110,7 @@ f18a16d fix: timeline UI + code review fixes
 8ec6d0d feat: add game state persistence
 cc90cb2 feat: production hardening and optimizations
 7223109 fix: server TypeScript errors and API validation
+93a2b2f docs: update docs
 
 ============================================================
   KNOWN ISSUES (Fixed)

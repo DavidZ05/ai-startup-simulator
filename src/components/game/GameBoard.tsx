@@ -5,6 +5,8 @@ import { Dashboard } from './Dashboard'
 import { DecisionPanel } from './DecisionPanel'
 import { MonthlyReport } from './MonthlyReport'
 import { EventNotification } from './EventNotification'
+import { GameBoardSkeleton } from '../ui/Skeleton'
+import { GameErrorBoundary } from '../ui/GameErrorBoundary'
 import type { Decision } from '../../types/game'
 
 export function GameBoard() {
@@ -56,7 +58,9 @@ export function GameBoard() {
     dispatch({ type: 'CLOSE_REPORT' })
   }
 
-  if (!company) return null
+  if (!company) {
+    return <GameBoardSkeleton />
+  }
 
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   const currentMonthName = monthNames[(company.month - 1) % 12]
@@ -92,20 +96,26 @@ export function GameBoard() {
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-4 xl:col-span-3">
-            <Dashboard company={company} />
+            <GameErrorBoundary name="Dashboard">
+              <Dashboard company={company} />
+            </GameErrorBoundary>
           </div>
           <div className="lg:col-span-8 xl:col-span-9">
-            <DecisionPanel
-              company={company}
-              onDecide={handleDecide}
-              disabled={processing}
-            />
+            <GameErrorBoundary name="DecisionPanel">
+              <DecisionPanel
+                company={company}
+                onDecide={handleDecide}
+                disabled={processing}
+              />
+            </GameErrorBoundary>
           </div>
         </div>
       </div>
 
       {currentReport && (
-        <MonthlyReport report={currentReport.report} onClose={handleCloseReport} />
+        <GameErrorBoundary name="MonthlyReport">
+          <MonthlyReport report={currentReport.report} onClose={handleCloseReport} />
+        </GameErrorBoundary>
       )}
       {currentEvent && <EventNotification event={currentEvent} />}
     </div>

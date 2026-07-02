@@ -28,6 +28,11 @@ npm run dev
 npm run dev:all
 ```
 
+### Run Tests
+```bash
+npm test
+```
+
 ### Docker
 ```bash
 docker-compose up
