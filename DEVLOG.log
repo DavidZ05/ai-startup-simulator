@@ -111,6 +111,7 @@ f18a16d fix: timeline UI + code review fixes
 cc90cb2 feat: production hardening and optimizations
 7223109 fix: server TypeScript errors and API validation
 93a2b2f docs: update docs
+bf560c2 feat: add tests, loading skeletons, and error boundaries
 
 ============================================================
   KNOWN ISSUES (Fixed)
@@ -126,13 +127,17 @@ cc90cb2 feat: production hardening and optimizations
 8. [FIXED] No game state validation on backend
 9. [FIXED] No rate limiting for API endpoints
 10. [FIXED] No production deployment configuration
+11. [FIXED] No unit tests
+12. [FIXED] No loading skeleton screens
+13. [FIXED] No component-level error boundaries
 
 ============================================================
   REMAINING ITEMS
 ============================================================
 
-- Full loading skeleton screens (partial: added basic loading)
-- Database migration scripts for schema updates
+- ESLint + Prettier configuration
+- CI/CD pipeline
+- Database migration scripts
 - Automated backups
 - Monitoring and logging
 
