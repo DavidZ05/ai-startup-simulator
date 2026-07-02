@@ -49,5 +49,9 @@ export function getEndCondition(company: Company): EndCondition | null {
     return { type: 'success', reason: '✅ Profitable and growing! Your startup is sustainable!' }
   }
 
+  if (company.ipoReady) {
+    return { type: 'success', reason: '📈 IPO successful! Your startup is now publicly traded!' }
+  }
+
   return null
 }

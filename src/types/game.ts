@@ -16,8 +16,12 @@ export interface Company {
   cooldowns: Record<string, number>
   unlockedAchievements?: string[]
   unlockedTech?: string[]
+  unlockedMarkets?: string[]
+  employees?: string[]
   competitors?: CompetitorState[]
   lastQuarterReport?: QuarterlyReport | null
+  ipoReady?: boolean
+  acquisitionOffers?: AcquisitionOffer[]
 }
 
 export interface CompetitorState {
@@ -25,6 +29,14 @@ export interface CompetitorState {
   name: string
   strength: number
   strategy: 'aggressive' | 'balanced' | 'conservative'
+}
+
+export interface AcquisitionOffer {
+  id: string
+  company: string
+  amount: number
+  terms: string
+  month: number
 }
 
 export interface QuarterlyReport {

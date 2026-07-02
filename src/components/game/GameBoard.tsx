@@ -7,6 +7,9 @@ import { MonthlyReport } from './MonthlyReport'
 import { EventNotification } from './EventNotification'
 import { AchievementsPanel } from './AchievementsPanel'
 import { TechTreePanel } from './TechTreePanel'
+import { MarketPanel } from './MarketPanel'
+import { EmployeePanel } from './EmployeePanel'
+import { IPOPanel } from './IPOPanel'
 import { QuarterlyReportModal } from './QuarterlyReportModal'
 import { GameBoardSkeleton } from '../ui/Skeleton'
 import { GameErrorBoundary } from '../ui/GameErrorBoundary'
@@ -84,6 +87,63 @@ export function GameBoard() {
     })
   }
 
+  const handleExpandMarket = (marketId: string, cost: number) => {
+    if (!company || company.funds < cost) return
+
+    import('../../engine/calculator').then(({ applyEffects }) => {
+      import('../../config/markets').then(({ MARKETS }) => {
+        const market = MARKETS.find(m => m.id === marketId)
+        if (!market) return
+
+        const newState = {
+          ...company,
+          funds: company.funds - cost,
+          unlockedMarkets: [...(company.unlockedMarkets || []), marketId],
+        }
+
+        const updatedCompany = applyEffects(newState, market.effects)
+        dispatch({ type: 'LOAD_GAME', state: { ...state, company: updatedCompany } })
+      })
+    })
+  }
+
+  const handleHireEmployee = (employeeId: string, cost: number) => {
+    if (!company || company.funds < cost) return
+
+    import('../../engine/calculator').then(({ applyEffects }) => {
+      import('../../config/employees').then(({ EMPLOYEE_ROLES }) => {
+        const employee = EMPLOYEE_ROLES.find(e => e.id === employeeId)
+        if (!employee) return
+
+        const newState = {
+          ...company,
+          funds: company.funds - cost,
+          employees: [...(company.employees || []), employeeId],
+        }
+
+        const updatedCompany = applyEffects(newState, employee.effects)
+        dispatch({ type: 'LOAD_GAME', state: { ...state, company: updatedCompany } })
+      })
+    })
+  }
+
+  const handleGoPublic = () => {
+    if (!company || !company.ipoReady) return
+    dispatch({ type: 'END_GAME', result: { type: 'success', reason: '📈 IPO successful! Your startup is now publicly traded!' }, company })
+  }
+
+  const handleAcceptOffer = (offerId: string) => {
+    if (!company) return
+    const offer = company.acquisitionOffers?.find(o => o.id === offerId)
+    if (!offer) return
+    
+    const acquiredCompany = {
+      ...company,
+      funds: company.funds + offer.amount,
+    }
+    dispatch({ type: 'END_GAME', result: { type: 'success', reason: `🤝 Acquired by ${offer.company} for $${offer.amount.toLocaleString()}!` }, company: acquiredCompany })
+  }
+
   const handleCloseReport = () => {
     dispatch({ type: 'CLOSE_REPORT' })
   }
@@ -136,6 +196,9 @@ export function GameBoard() {
             <GameErrorBoundary name="Achievements">
               <AchievementsPanel company={company} />
             </GameErrorBoundary>
+            <GameErrorBoundary name="Markets">
+              <MarketPanel company={company} onExpand={handleExpandMarket} />
+            </GameErrorBoundary>
           </div>
           <div className="lg:col-span-6">
             <GameErrorBoundary name="DecisionPanel">
@@ -146,9 +209,15 @@ export function GameBoard() {
               />
             </GameErrorBoundary>
           </div>
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 space-y-4">
             <GameErrorBoundary name="TechTree">
               <TechTreePanel company={company} onUnlock={handleUnlockTech} />
+            </GameErrorBoundary>
+            <GameErrorBoundary name="Employees">
+              <EmployeePanel company={company} onHire={handleHireEmployee} />
+            </GameErrorBoundary>
+            <GameErrorBoundary name="IPO">
+              <IPOPanel company={company} onAcceptOffer={handleAcceptOffer} onGoPublic={handleGoPublic} />
             </GameErrorBoundary>
           </div>
         </div>

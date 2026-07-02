@@ -14,6 +14,15 @@ const MONTH_NAMES = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ]
 
+const EMPLOYEE_IDS = [
+  'junior-dev', 'senior-dev', 'lead-eng', 'product-mgr', 'designer',
+  'marketer', 'sales', 'devops', 'data-scientist', 'cto'
+]
+
+const ACQUIRER_NAMES = [
+  'Google', 'Microsoft', 'Apple', 'Amazon', 'Meta', 'Tesla', 'Netflix', 'Salesforce'
+]
+
 function generateQuarterlyReport(
   company: Company,
   fullHistory: Company[]
@@ -142,6 +151,16 @@ export function processMonth(state: Company, decisions: Decision[], history: Com
       if (!newState.cooldowns) newState.cooldowns = {}
       newState.cooldowns[decision.id] = newState.month
     }
+
+    if (decision.id.startsWith('expand-')) {
+      const marketId = decision.id.replace('expand-', '')
+      newState.unlockedMarkets = [...(newState.unlockedMarkets || []), marketId]
+    }
+
+    if (decision.id.startsWith('hire-') || EMPLOYEE_IDS.includes(decision.id)) {
+      const employeeId = decision.id.replace('hire-', '')
+      newState.employees = [...(newState.employees || []), employeeId]
+    }
   }
 
   const burnCost = Math.round(newState.burnRate * GAME_CONFIG.BURN_COST_MULTIPLIER)
@@ -187,6 +206,25 @@ export function processMonth(state: Company, decisions: Decision[], history: Com
 
   const newAchievements = checkAchievements(newState, [...history, newState], newState.unlockedAchievements || [])
   newState.unlockedAchievements = [...(newState.unlockedAchievements || []), ...newAchievements.map(a => a.id)]
+
+  if (newState.month >= 24 && newState.product >= 70 && newState.users >= 100 && newState.funds >= 300000) {
+    newState.ipoReady = true
+  }
+
+  if (newState.month % 6 === 0 && newState.product >= 60 && newState.users >= 80 && (!newState.acquisitionOffers || newState.acquisitionOffers.length < 3)) {
+    const acquirer = ACQUIRER_NAMES[Math.floor(Math.random() * ACQUIRER_NAMES.length)]
+    const baseAmount = newState.funds * 2 + newState.users * 1000 + newState.product * 5000
+    const amount = Math.round(baseAmount * (0.8 + Math.random() * 0.4))
+    
+    const offer = {
+      id: `offer-${Date.now()}`,
+      company: acquirer,
+      amount,
+      terms: amount > 500000 ? 'Full acquisition with earn-out' : 'Acqui-hire with retention bonus',
+      month: newState.month,
+    }
+    newState.acquisitionOffers = [...(newState.acquisitionOffers || []), offer]
+  }
 
   const quarterlyReport = generateQuarterlyReport(newState, [...history, newState])
   newState.lastQuarterReport = quarterlyReport
