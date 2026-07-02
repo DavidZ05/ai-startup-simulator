@@ -177,3 +177,19 @@ Run the simulation to verify game balance:
 ```bash
 npx tsx src/engine/balance-test.ts
 ```
+
+## Data Management
+
+```bash
+# Delete entire database (resets all data)
+rm -rf data/
+
+# Cleanup games older than 90 days
+./scripts/cleanup.sh
+
+# Cleanup games older than 30 days
+./scripts/cleanup.sh 30
+
+# Enable auto-cleanup on server start
+AUTO_CLEANUP=true npm run dev:server
+```
