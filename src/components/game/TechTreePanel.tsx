@@ -11,15 +11,27 @@ export function TechTreePanel({ company, onUnlock }: TechTreeProps) {
   const [selectedTech, setSelectedTech] = useState<string | null>(null)
   const unlocked = company.unlockedTech || []
   const available = getAvailableTech(unlocked)
+  const progress = Math.round((unlocked.length / TECH_TREE.length) * 100)
 
   return (
     <div className="bg-[#1e1e3a]/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 shadow-xl">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-lg">🌳</span>
-        <h3 className="text-sm font-bold text-white">Tech Tree</h3>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">🌳</span>
+          <h3 className="text-sm font-bold text-white">Tech Tree</h3>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-16 h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <span className="text-[10px] text-slate-400">{unlocked.length}/{TECH_TREE.length}</span>
+        </div>
       </div>
 
-      <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+      <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
         {TECH_TREE.map(tech => {
           const isUnlocked = unlocked.includes(tech.id)
           const isAvailable = available.some(a => a.id === tech.id)
@@ -30,7 +42,7 @@ export function TechTreePanel({ company, onUnlock }: TechTreeProps) {
             <div
               key={tech.id}
               onClick={() => setSelectedTech(isSelected ? null : tech.id)}
-              className={`p-2 rounded-lg border cursor-pointer transition-all ${
+              className={`p-2 rounded-lg border cursor-pointer transition-all duration-200 hover:scale-[1.01] ${
                 isUnlocked
                   ? 'bg-emerald-500/10 border-emerald-500/30'
                   : isAvailable && canAfford
@@ -43,7 +55,7 @@ export function TechTreePanel({ company, onUnlock }: TechTreeProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-sm">{tech.emoji}</span>
-                  <span className="text-xs font-medium text-white">{tech.name}</span>
+                  <span className="text-[11px] font-medium text-white">{tech.name}</span>
                 </div>
                 {isUnlocked ? (
                   <span className="text-[10px] text-emerald-400">✓</span>
@@ -62,7 +74,7 @@ export function TechTreePanel({ company, onUnlock }: TechTreeProps) {
                         if (canAfford) onUnlock(tech.id, tech.cost)
                       }}
                       disabled={!canAfford}
-                      className={`w-full py-1 text-[10px] rounded ${
+                      className={`w-full py-1 text-[10px] rounded transition-all ${
                         canAfford
                           ? 'bg-indigo-500 hover:bg-indigo-400 text-white'
                           : 'bg-slate-700 text-slate-400'

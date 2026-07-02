@@ -123,6 +123,9 @@ mini-game-demo/
 | ⚔️ Competitors | AI rivals that challenge you |
 | 🌳 Tech Tree | 10 technologies to research |
 | 📊 Quarterly Reports | Detailed analysis every 3 months |
+| 🌍 Market Expansion | 8 global markets to enter |
+| 🏢 Employee System | 10 roles from Junior Dev to CTO |
+| 💼 IPO/Acquisition | New exit options for victory |
 
 ## LLM Integration
 

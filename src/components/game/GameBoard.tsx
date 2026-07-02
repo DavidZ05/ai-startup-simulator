@@ -160,6 +160,10 @@ export function GameBoard() {
   const currentMonthName = monthNames[(company.month - 1) % 12]
   const currentYear = Math.floor((company.month - 1) / 12) + 1
 
+  const marketCount = company.unlockedMarkets?.length || 1
+  const employeeCount = company.employees?.length || 0
+  const techCount = company.unlockedTech?.length || 0
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0f23] via-[#1a1a3e] to-[#0f0f23]">
       <div className="bg-[#12122a]/80 backdrop-blur-xl border-b border-slate-700/50 sticky top-0 z-30">
@@ -168,19 +172,20 @@ export function GameBoard() {
             <div className="text-xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
               {company.name}
             </div>
-            <div className="hidden sm:flex items-center gap-2 text-sm text-slate-400">
+            <div className="hidden md:flex items-center gap-2 text-xs text-slate-400">
               <span className="px-2 py-1 bg-slate-700/50 rounded-lg">{company.industry}</span>
-              <span>·</span>
-              <span>{company.targetUsers}</span>
+              <span className="px-2 py-1 bg-slate-700/50 rounded-lg">🌍 {marketCount}</span>
+              <span className="px-2 py-1 bg-slate-700/50 rounded-lg">👥 {employeeCount}</span>
+              <span className="px-2 py-1 bg-slate-700/50 rounded-lg">🌳 {techCount}</span>
             </div>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <div className="text-xs text-slate-400">Month</div>
+              <div className="text-[10px] text-slate-400 uppercase tracking-wider">Month</div>
               <div className="text-sm font-bold text-white">{currentMonthName} Y{currentYear}</div>
             </div>
             <div className="text-right">
-              <div className="text-xs text-slate-400">Round</div>
+              <div className="text-[10px] text-slate-400 uppercase tracking-wider">Round</div>
               <div className="text-sm font-bold text-indigo-400">{turn}</div>
             </div>
           </div>
@@ -188,7 +193,7 @@ export function GameBoard() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
           <div className="lg:col-span-3 space-y-4">
             <GameErrorBoundary name="Dashboard">
               <Dashboard company={company} />

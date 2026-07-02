@@ -624,3 +624,15 @@ The decision engine supports three advanced mechanisms:
 - Created useOfflineStorage hook for local storage fallback
 - Updated GameContext to save/load games offline when API unavailable
 - Fixed lint warnings (unused imports, unused catch parameters)
+
+### v1.11 — Market Expansion, Employees & IPO
+**Changes**:
+- Added market expansion system (8 markets: US, EU, Asia, India, Japan, Brazil, Middle East)
+- Added employee system (10 roles from Junior Dev to CTO)
+- Added IPO victory condition (Month ≥ 24, Product ≥ 70%, Users ≥ 100, Funds ≥ $300K)
+- Added acquisition offers from major tech companies
+- Created MarketPanel, EmployeePanel, IPOPanel components
+- Updated Company type with new fields (unlockedMarkets, employees, ipoReady, acquisitionOffers)
+- Updated processor to handle market expansion and employee hiring
+- Updated end conditions for IPO and acquisition
+- Optimized UI: compact panels, progress bars, hover effects, responsive design

@@ -11,16 +11,27 @@ export function EmployeePanel({ company, onHire }: EmployeePanelProps) {
   const [selectedEmployee, setSelectedEmployee] = useState<string | null>(null)
   const currentEmployees = company.employees || []
   const available = getAvailableEmployees(currentEmployees)
+  const progress = Math.round((currentEmployees.length / EMPLOYEE_ROLES.length) * 100)
 
   return (
     <div className="bg-[#1e1e3a]/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 shadow-xl">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-lg">🏢</span>
-        <h3 className="text-sm font-bold text-white">Team</h3>
-        <span className="text-xs text-slate-400 ml-auto">{currentEmployees.length} hired</span>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">🏢</span>
+          <h3 className="text-sm font-bold text-white">Team</h3>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-16 h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-purple-500 rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <span className="text-[10px] text-slate-400">{currentEmployees.length}/{EMPLOYEE_ROLES.length}</span>
+        </div>
       </div>
 
-      <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+      <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
         {EMPLOYEE_ROLES.map(employee => {
           const isHired = currentEmployees.includes(employee.id)
           const isAvailable = available.some(a => a.id === employee.id)

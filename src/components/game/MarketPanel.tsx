@@ -11,16 +11,27 @@ export function MarketPanel({ company, onExpand }: MarketPanelProps) {
   const [selectedMarket, setSelectedMarket] = useState<string | null>(null)
   const unlockedMarkets = company.unlockedMarkets || ['local']
   const available = getAvailableMarkets(unlockedMarkets)
+  const progress = Math.round((unlockedMarkets.length / MARKETS.length) * 100)
 
   return (
     <div className="bg-[#1e1e3a]/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 shadow-xl">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-lg">🌍</span>
-        <h3 className="text-sm font-bold text-white">Markets</h3>
-        <span className="text-xs text-slate-400 ml-auto">{unlockedMarkets.length}/{MARKETS.length}</span>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">🌍</span>
+          <h3 className="text-sm font-bold text-white">Markets</h3>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-16 h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-cyan-500 rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <span className="text-[10px] text-slate-400">{unlockedMarkets.length}/{MARKETS.length}</span>
+        </div>
       </div>
 
-      <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+      <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
         {MARKETS.map(market => {
           const isUnlocked = unlockedMarkets.includes(market.id)
           const isAvailable = available.some(a => a.id === market.id)
