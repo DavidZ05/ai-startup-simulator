@@ -129,7 +129,7 @@ export function CreateCompany() {
                         : 'border-white/5 bg-white/[0.02] hover:bg-white/5 hover:border-white/10'
                     }`}
                   >
-                    <div className="text-2xl mb-1.5 group-hover:scale-110 transition-transform">{ind.emoji}</div>
+                    <div className="text-2xl mb-1.5 transition-transform duration-200">{ind.emoji}</div>
                     <div className="font-semibold text-white text-sm">{ind.name}</div>
                     <div className="text-[10px] text-slate-500 mt-0.5">{ind.description}</div>
                   </button>
