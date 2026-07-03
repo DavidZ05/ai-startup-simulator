@@ -1,0 +1,247 @@
+============================================================
+  AI Startup Simulator — Development Log
+============================================================
+
+Project: AI Startup Simulator
+Location: /Users/jiahaozhong/David/Study/mini-game-demo
+Author: MiMo Code Agent + Jiahao Zhong
+
+============================================================
+  SESSION SUMMARY
+============================================================
+
+Built a complete AI Startup Simulator web game with:
+- Turn-based business simulation game
+- React + TypeScript frontend
+- Node.js + Express backend
+- SQLite database
+- OpenAI API integration
+- 10+ game features (achievements, news, competitors, tech tree, market expansion, employees, IPO/acquisition)
+- PWA support with offline mode
+- Comprehensive UI with glassmorphism design
+
+============================================================
+  TIMELINE
+============================================================
+
+[Phase 1] Initial Project Setup
+--------------------------------
+- Created mini-game-demo folder
+- Initialized Vite + React project
+- Installed Tailwind CSS
+- Built initial game with 8 decisions, 10 random events, 7 metrics
+
+[Phase 2] Balance Testing & Patching
+-------------------------------------
+- Identified fundraising exploit (infinite $195K net gain per round)
+- Added 3-layer fix: threshold gate, cooldown, diminishing returns
+- Ran 10 strategy simulations via balance-test.js
+- Found game was too hard (all strategies failed in 3-5 months)
+- Rebalanced: doubled starting funds, reduced burn rate and costs
+- Verified 6/10 strategies can now win
+
+[Phase 3] TypeScript Refactoring
+---------------------------------
+- Migrated from JavaScript to TypeScript (strict mode)
+- Created type definitions (types/game.ts)
+- Extracted constants to config/constants.ts
+- Split engine into modular files (calculator, validator, events, conditions, processor)
+- Added Context + useReducer state management
+- Added ErrorBoundary component
+- Reorganized components into game/ and ui/ directories
+
+[Phase 4] Backend Development
+-------------------------------
+- Built Express server with TypeScript
+- Created SQLite database schema (users, games, game_history, leaderboard)
+- Implemented JWT authentication (register/login)
+- Added game CRUD operations with history tracking
+- Integrated OpenAI API for AI-generated reports
+- Added leaderboard system
+- Created frontend API client
+
+[Phase 5] Game Features
+-------------------------
+- Achievement system (14 milestones)
+- Industry news (10 types)
+- Competitor AI (3 strategies)
+- Tech tree (10 technologies)
+- Quarterly reports
+- Market expansion (8 markets)
+- Employee system (10 roles)
+- IPO/Acquisition exit options
+
+[Phase 6] UI/UX Improvements
+------------------------------
+- Glassmorphism design language
+- Ambient glow background effects
+- Icon badges with gradient backgrounds
+- Loading skeletons for all components
+- Offline mode with PWA support
+- Responsive design
+
+[Phase 7] Bug Fixes & Optimization
+------------------------------------
+- Fixed quarterly report display order
+- Fixed acquisition offer duplicate companies
+- Fixed quarterly report showing after game load
+- Removed hover:scale effects causing layout overflow
+- Added icon hover effects with fixed-size wrappers
+- Relaxed test assertions for random events
+
+============================================================
+  KEY DECISIONS
+============================================================
+
+1. Game Balance:
+   - Starting funds: $200K
+   - Burn rate: $12K/month
+   - Fundraising: gated by product/users, 3-month cooldown, diminishing returns
+   - IPO requires: Month ≥ 24, Product ≥ 70%, Users ≥ 100, Funds ≥ $300K
+
+2. Tech Stack:
+   - Frontend: React 19 + Vite + Tailwind CSS v4 + TypeScript
+   - Backend: Express + SQLite (better-sqlite3) + JWT
+   - AI: OpenAI API with mock fallback
+   - PWA: Service worker + manifest.json
+
+3. Architecture:
+   - Context + useReducer for state management
+   - Modular engine (calculator, validator, events, conditions, processor)
+   - Config-based features (achievements, news, competitors, tech tree, markets, employees)
+   - Offline-first with localStorage fallback
+
+============================================================
+  GIT HISTORY (Recent)
+============================================================
+
+116337b docs: update DESIGN.md and README.md
+6d9a6d7 fix: logic improvements and bug fixes
+fef7059 fix: show quarterly report after closing monthly report
+a642f33 ui: update report modals to new design language
+438e695 fix: use wrapper div for icon scaling to prevent overflow
+e11094f fix: replace scale hover with brightness hover to avoid layout issues
+a03395c fix: add overflow-hidden to clip icon hover effects in-place
+adb6356 feat: add icon hover effects with origin-center transform
+4f0a6e4 fix: remove all hover:scale effects that cause layout overflow
+491990f fix: use card scale effect instead of emoji scale to avoid overflow
+aa3380f fix: add overflow-hidden to preserve hover effect without layout shift
+ec2b7a0 fix: remove emoji scale hover that caused layout shift
+653ada7 ui: comprehensive visual redesign
+c287fa4 fix: restore proper sizing for GameSelector
+f657e91 fix: optimize GameSelector layout and auto-cleanup toggle
+678fe93 fix: optimize login form layout and fix overflow issues
+c03d212 ui: optimize dashboard, panels, and responsive design
+dae4099 feat: add market expansion, employee system, and IPO/acquisition
+9ea39b4 feat: add quarterly report system and enhance existing features
+
+============================================================
+  KNOWN ISSUES (Fixed)
+============================================================
+
+1. [FIXED] Fundraising exploit — infinite money via repeated fundraising
+2. [FIXED] Game too hard — all strategies failed in 3-5 months
+3. [FIXED] Timeline UI — labels obscured by progress bars
+4. [FIXED] Backend deps in frontend package.json
+5. [FIXED] Missing Request import in game routes
+6. [FIXED] Revenue never grew with small user count
+7. [FIXED] Frontend state not persisted to backend
+8. [FIXED] No game state validation on backend
+9. [FIXED] No rate limiting for API endpoints
+10. [FIXED] No production deployment configuration
+11. [FIXED] No unit tests
+12. [FIXED] No loading skeleton screens
+13. [FIXED] No component-level error boundaries
+14. [FIXED] No data management tools
+15. [FIXED] Quarterly report display order
+16. [FIXED] Acquisition offer duplicate companies
+17. [FIXED] Quarterly report showing after game load
+18. [FIXED] Hover effects causing layout overflow
+19. [FIXED] Login form UI overflow
+20. [FIXED] GameSelector auto-cleanup toggle sizing
+
+============================================================
+  REMAINING ITEMS
+============================================================
+
+- ESLint + Prettier configuration
+- CI/CD pipeline
+- Database migration scripts
+- Automated backups
+- Monitoring and logging
+
+============================================================
+  FILE STRUCTURE (Current)
+============================================================
+
+mini-game-demo/
+├── src/
+│   ├── types/game.ts              # TypeScript types
+│   ├── config/
+│   │   ├── constants.ts           # Game balance constants
+│   │   ├── decisions.ts           # Decision & event definitions
+│   │   ├── achievements.ts        # Achievement system
+│   │   ├── news.ts                # Industry news
+│   │   ├── competitors.ts         # Competitor AI
+│   │   ├── techTree.ts            # Tech tree
+│   │   ├── markets.ts             # Market expansion
+│   │   └── employees.ts           # Employee system
+│   ├── engine/
+│   │   ├── calculator.ts          # Metric calculations
+│   │   ├── validator.ts           # Decision validation
+│   │   ├── events.ts              # Random event system
+│   │   ├── conditions.ts          # Win/lose conditions
+│   │   └── processor.ts           # Monthly processing
+│   ├── services/
+│   │   └── api.ts                 # Backend API client
+│   ├── hooks/
+│   │   └── useOfflineStorage.ts   # Offline storage hook
+│   ├── context/
+│   │   ├── GameContext.tsx         # Game state context
+│   │   └── AuthContext.tsx         # Auth state context
+│   └── components/
+│       ├── ui/
+│       │   ├── ErrorBoundary.tsx   # Global error boundary
+│       │   ├── GameErrorBoundary.tsx # Component error boundary
+│       │   ├── Skeleton.tsx        # Loading skeletons
+│       │   └── OfflineIndicator.tsx # Online/offline status
+│       ├── auth/
+│       │   └── LoginForm.tsx       # Login/Register UI
+│       └── game/
+│           ├── GameBoard.tsx       # Main game interface
+│           ├── Dashboard.tsx       # Metric dashboard
+│           ├── DecisionPanel.tsx   # Decision selection
+│           ├── MonthlyReport.tsx   # Monthly report modal
+│           ├── QuarterlyReportModal.tsx # Quarterly report
+│           ├── EventNotification.tsx # Event toasts
+│           ├── AchievementsPanel.tsx # Achievements display
+│           ├── TechTreePanel.tsx   # Tech tree panel
+│           ├── MarketPanel.tsx     # Market expansion
+│           ├── EmployeePanel.tsx   # Employee hiring
+│           ├── IPOPanel.tsx        # IPO/Acquisition
+│           ├── CreateCompany.tsx   # Company creation wizard
+│           ├── GameSelector.tsx    # Game management
+│           └── EndGame.tsx         # Victory/defeat screen
+├── public/
+│   ├── manifest.json              # PWA manifest
+│   └── sw.js                      # Service worker
+├── server/
+│   ├── index.ts                   # Express server
+│   ├── db.ts                      # SQLite setup
+│   ├── middleware/
+│   │   ├── rateLimit.ts           # API rate limiting
+│   │   └── validateState.ts       # Game state validation
+│   └── routes/
+│       ├── auth.ts                # JWT authentication
+│       ├── game.ts                # Game CRUD
+│       ├── ai.ts                  # LLM proxy
+│       ├── leaderboard.ts         # Score rankings
+│       └── storage.ts             # Storage stats
+├── DESIGN.md                      # Game design document
+├── API.md                         # API documentation
+├── DEVLOG.log                     # This file
+└── README.md                      # Project documentation
+
+============================================================
+  END OF LOG
+============================================================
