@@ -668,3 +668,12 @@ The decision engine supports three advanced mechanisms:
 - Responsive grid layout (stacks on mobile)
 - Fixed console.error only output in dev mode
 - Replaced dynamic imports with static imports in GameBoard
+
+### v1.15 — Sound Effects & Ambient BGM
+**Changes**:
+- Created SoundManager with Web Audio API tones (10 sound types)
+- Added ambient BGM using Web Audio API (no external files needed)
+- Integrated sound effects into DecisionPanel, GameBoard, CreateCompany
+- Sound triggers: click, select, confirm, success, error, event, achievement, levelUp, coin, notification
+- Volume persistence in localStorage
+- Audio controls in bottom-right corner

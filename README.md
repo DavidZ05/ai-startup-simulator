@@ -78,6 +78,8 @@ mini-game-demo/
 │   ├── hooks/
 │   │   ├── useOfflineStorage.ts  # Offline storage hook
 │   │   └── useMobileOptimization.ts # Mobile detection hook
+│   ├── utils/
+│   │   └── sounds.ts             # Sound effects system
 │   ├── context/
 │   │   ├── GameContext.tsx        # Game state context
 │   │   └── AuthContext.tsx        # Auth state context
@@ -172,7 +174,8 @@ mini-game-demo/
 | 🌍 Market Expansion | 8 global markets to enter |
 | 🏢 Employee System | 10 roles from Junior Dev to CTO |
 | 💼 IPO/Acquisition | Exit options for victory |
-| 🎵 Background Music | Play/pause with volume control |
+| 🔊 Sound Effects | 10 Web Audio API sound types |
+| 🎵 Background Music | Ambient BGM with volume control |
 | 📱 Mobile Optimized | Touch-friendly responsive design |
 | 📱 PWA Support | Install as app, offline mode |
 | 🔒 Auth System | JWT authentication, game persistence |

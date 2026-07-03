@@ -99,6 +99,15 @@ Built a complete AI Startup Simulator web game with:
 - Fixed console.error only output in dev mode
 - Replaced dynamic imports with static imports in GameBoard
 
+[Phase 8] Sound Effects & Ambient BGM
+---------------------------------------
+- Created SoundManager with Web Audio API tones (10 sound types)
+- Added ambient BGM using Web Audio API (no external files needed)
+- Integrated sound effects into DecisionPanel, GameBoard, CreateCompany
+- Sound triggers: click, select, confirm, success, error, event, achievement, levelUp, coin, notification
+- Volume persistence in localStorage
+- Audio controls in bottom-right corner
+
 ============================================================
   KEY DECISIONS
 ============================================================
@@ -127,6 +136,9 @@ Built a complete AI Startup Simulator web game with:
 
 116337b docs: update DESIGN.md and README.md
 bc696be docs: update DEVLOG.log with all recent changes
+a104dd1 feat: add sound effects and ambient BGM
+2c83f21 docs: update all documentation with v1.14 changes
+91f7d76 feat: add background music, mobile optimization, and fix audit issues
 6d9a6d7 fix: logic improvements and bug fixes
 fef7059 fix: show quarterly report after closing monthly report
 a642f33 ui: update report modals to new design language
@@ -220,6 +232,8 @@ mini-game-demo/
 │   ├── hooks/
 │   │   ├── useOfflineStorage.ts   # Offline storage hook
 │   │   └── useMobileOptimization.ts # Mobile detection hook
+│   ├── utils/
+│   │   └── sounds.ts              # Sound effects system
 │   ├── context/
 │   │   ├── GameContext.tsx         # Game state context
 │   │   └── AuthContext.tsx         # Auth state context
