@@ -658,3 +658,13 @@ The decision engine supports three advanced mechanisms:
 - Used fixed-size wrapper divs to prevent overflow
 - Cleaned up dead code in processor (market/employee tracking)
 - Relaxed test assertions for random event variability
+
+### v1.14 — Audio, Mobile & Audit Fixes
+**Changes**:
+- Added background music system with play/pause and volume control
+- AudioProvider context for global audio state
+- Volume persistence in localStorage
+- Mobile optimization: responsive header, touch-friendly spacing
+- Responsive grid layout (stacks on mobile)
+- Fixed console.error only output in dev mode
+- Replaced dynamic imports with static imports in GameBoard

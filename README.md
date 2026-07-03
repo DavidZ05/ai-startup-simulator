@@ -76,7 +76,8 @@ mini-game-demo/
 │   ├── services/
 │   │   └── api.ts                # Backend API client
 │   ├── hooks/
-│   │   └── useOfflineStorage.ts  # Offline storage hook
+│   │   ├── useOfflineStorage.ts  # Offline storage hook
+│   │   └── useMobileOptimization.ts # Mobile detection hook
 │   ├── context/
 │   │   ├── GameContext.tsx        # Game state context
 │   │   └── AuthContext.tsx        # Auth state context
@@ -85,7 +86,8 @@ mini-game-demo/
 │       │   ├── ErrorBoundary.tsx  # Global error boundary
 │       │   ├── GameErrorBoundary.tsx # Component error boundary
 │       │   ├── Skeleton.tsx       # Loading skeletons
-│       │   └── OfflineIndicator.tsx # Online/offline status
+│       │   ├── OfflineIndicator.tsx # Online/offline status
+│       │   └── AudioPlayer.tsx    # Background music controls
 │       ├── auth/LoginForm.tsx     # Login/Register UI
 │       └── game/
 │           ├── GameBoard.tsx      # Main game interface
@@ -170,6 +172,8 @@ mini-game-demo/
 | 🌍 Market Expansion | 8 global markets to enter |
 | 🏢 Employee System | 10 roles from Junior Dev to CTO |
 | 💼 IPO/Acquisition | Exit options for victory |
+| 🎵 Background Music | Play/pause with volume control |
+| 📱 Mobile Optimized | Touch-friendly responsive design |
 | 📱 PWA Support | Install as app, offline mode |
 | 🔒 Auth System | JWT authentication, game persistence |
 

@@ -89,6 +89,16 @@ Built a complete AI Startup Simulator web game with:
 - Added icon hover effects with fixed-size wrappers
 - Relaxed test assertions for random events
 
+[Phase 8] Audio, Mobile & Audit Fixes
+---------------------------------------
+- Added background music system with play/pause and volume control
+- AudioProvider context for global audio state
+- Volume persistence in localStorage
+- Mobile optimization: responsive header, touch-friendly spacing
+- Responsive grid layout (stacks on mobile)
+- Fixed console.error only output in dev mode
+- Replaced dynamic imports with static imports in GameBoard
+
 ============================================================
   KEY DECISIONS
 ============================================================
@@ -116,12 +126,25 @@ Built a complete AI Startup Simulator web game with:
 ============================================================
 
 116337b docs: update DESIGN.md and README.md
+bc696be docs: update DEVLOG.log with all recent changes
 6d9a6d7 fix: logic improvements and bug fixes
 fef7059 fix: show quarterly report after closing monthly report
 a642f33 ui: update report modals to new design language
 438e695 fix: use wrapper div for icon scaling to prevent overflow
 e11094f fix: replace scale hover with brightness hover to avoid layout issues
 a03395c fix: add overflow-hidden to clip icon hover effects in-place
+adb6356 feat: add icon hover effects with origin-center transform
+4f0a6e4 fix: remove all hover:scale effects that cause layout overflow
+491990f fix: use card scale effect instead of emoji scale to avoid overflow
+aa3380f fix: add overflow-hidden to preserve hover effect without layout shift
+ec2b7a0 fix: remove emoji scale hover that caused layout shift
+653ada7 ui: comprehensive visual redesign
+c287fa4 fix: restore proper sizing for GameSelector
+f657e91 fix: optimize GameSelector layout and auto-cleanup toggle
+678fe93 fix: optimize login form layout and fix overflow issues
+c03d212 ui: optimize dashboard, panels, and responsive design
+dae4099 feat: add market expansion, employee system, and IPO/acquisition
+9ea39b4 feat: add quarterly report system and enhance existing features
 adb6356 feat: add icon hover effects with origin-center transform
 4f0a6e4 fix: remove all hover:scale effects that cause layout overflow
 491990f fix: use card scale effect instead of emoji scale to avoid overflow
@@ -195,7 +218,8 @@ mini-game-demo/
 │   ├── services/
 │   │   └── api.ts                 # Backend API client
 │   ├── hooks/
-│   │   └── useOfflineStorage.ts   # Offline storage hook
+│   │   ├── useOfflineStorage.ts   # Offline storage hook
+│   │   └── useMobileOptimization.ts # Mobile detection hook
 │   ├── context/
 │   │   ├── GameContext.tsx         # Game state context
 │   │   └── AuthContext.tsx         # Auth state context
@@ -204,7 +228,8 @@ mini-game-demo/
 │       │   ├── ErrorBoundary.tsx   # Global error boundary
 │       │   ├── GameErrorBoundary.tsx # Component error boundary
 │       │   ├── Skeleton.tsx        # Loading skeletons
-│       │   └── OfflineIndicator.tsx # Online/offline status
+│       │   ├── OfflineIndicator.tsx # Online/offline status
+│       │   └── AudioPlayer.tsx     # Background music controls
 │       ├── auth/
 │       │   └── LoginForm.tsx       # Login/Register UI
 │       └── game/
