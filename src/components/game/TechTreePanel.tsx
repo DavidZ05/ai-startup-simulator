@@ -54,7 +54,7 @@ export function TechTreePanel({ company, onUnlock }: TechTreeProps) {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm">{tech.emoji}</span>
+                  <span className="text-sm origin-center group-hover:scale-125 transition-transform duration-200">{tech.emoji}</span>
                   <span className="text-[11px] font-medium text-white">{tech.name}</span>
                 </div>
                 {isUnlocked ? (

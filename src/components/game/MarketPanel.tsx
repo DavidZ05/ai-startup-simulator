@@ -58,7 +58,7 @@ export function MarketPanel({ company, onExpand }: MarketPanelProps) {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm">{market.emoji}</span>
+                  <span className="text-sm origin-center group-hover:scale-125 transition-transform duration-200">{market.emoji}</span>
                   <span className="text-xs font-medium text-white">{market.name}</span>
                 </div>
                 {isUnlocked ? (
