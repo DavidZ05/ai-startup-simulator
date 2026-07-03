@@ -9,140 +9,122 @@ interface AudioContextType {
 
 const AudioContext = createContext<AudioContextType | null>(null)
 
-class AmbientBGM {
-  private ctx: globalThis.AudioContext | null = null
-  private gainNode: GainNode | null = null
-  private oscillators: OscillatorNode[] = []
-  private isPlaying = false
-  private loopInterval: ReturnType<typeof setInterval> | null = null
+function createBGMBuffer(ctx: AudioContext): AudioBuffer {
+  const sampleRate = ctx.sampleRate
+  const duration = 8
+  const buffer = ctx.createBuffer(2, sampleRate * duration, sampleRate)
 
-  start(volume: number = 0.15) {
-    if (this.isPlaying) return
+  const chordProgressions = [
+    [261.63, 329.63, 392.00],
+    [293.66, 369.99, 440.00],
+    [329.63, 415.30, 493.88],
+    [349.23, 440.00, 523.25],
+  ]
 
-    this.ctx = new globalThis.AudioContext()
-    if (this.ctx.state === 'suspended') {
-      this.ctx.resume()
-    }
-    this.gainNode = this.ctx.createGain()
-    this.gainNode.gain.value = volume
-    this.gainNode.connect(this.ctx.destination)
+  for (let channel = 0; channel < 2; channel++) {
+    const data = buffer.getChannelData(channel)
 
-    const notes = [261.63, 329.63, 392.00, 523.25]
-    const now = this.ctx.currentTime
+    for (let i = 0; i < data.length; i++) {
+      const t = i / sampleRate
+      const chordIndex = Math.floor((t / duration) * chordProgressions.length) % chordProgressions.length
+      const chord = chordProgressions[chordIndex]
 
-    notes.forEach((freq, i) => {
-      if (!this.ctx || !this.gainNode) return
-      const osc = this.ctx.createOscillator()
-      const oscGain = this.ctx.createGain()
-
-      osc.type = 'sine'
-      osc.frequency.value = freq
-
-      oscGain.gain.setValueAtTime(0, now)
-      oscGain.gain.linearRampToValueAtTime(0.15, now + 2 + i * 0.5)
-      oscGain.gain.linearRampToValueAtTime(0.1, now + 8 + i * 0.5)
-      oscGain.gain.linearRampToValueAtTime(0, now + 16)
-
-      osc.connect(oscGain)
-      oscGain.connect(this.gainNode)
-
-      osc.start(now + i * 0.3)
-      osc.stop(now + 16)
-
-      this.oscillators.push(osc)
-    })
-
-    this.isPlaying = true
-
-    this.loopInterval = setInterval(() => {
-      if (!this.isPlaying || !this.ctx) {
-        if (this.loopInterval) clearInterval(this.loopInterval)
-        return
+      let sample = 0
+      for (const freq of chord) {
+        sample += Math.sin(2 * Math.PI * freq * t) * 0.08
+        sample += Math.sin(2 * Math.PI * freq * 0.5 * t) * 0.04
       }
-      this.playLoop()
-    }, 14000)
-  }
 
-  private playLoop() {
-    if (!this.ctx || !this.gainNode) return
+      const melodyFreqs = [523.25, 587.33, 659.26, 698.46, 783.99]
+      const melodyIndex = Math.floor(t * 2) % melodyFreqs.length
+      const melodyEnv = Math.max(0, 1 - ((t * 2) % 1) * 2)
+      sample += Math.sin(2 * Math.PI * melodyFreqs[melodyIndex] * t) * 0.05 * melodyEnv
 
-    const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]
-    const now = this.ctx.currentTime
+      const fadeIn = Math.min(1, t / 0.5)
+      const fadeOut = Math.min(1, (duration - t) / 0.5)
+      sample *= fadeIn * fadeOut
 
-    for (let i = 0; i < 4; i++) {
-      if (!this.ctx || !this.gainNode) return
-      const osc = this.ctx.createOscillator()
-      const oscGain = this.ctx.createGain()
-      const freq = notes[Math.floor(Math.random() * notes.length)]
-
-      osc.type = 'sine'
-      osc.frequency.value = freq * (Math.random() > 0.5 ? 0.5 : 1)
-
-      oscGain.gain.setValueAtTime(0, now + i * 3)
-      oscGain.gain.linearRampToValueAtTime(0.12, now + i * 3 + 0.5)
-      oscGain.gain.linearRampToValueAtTime(0, now + i * 3 + 2.5)
-
-      osc.connect(oscGain)
-      oscGain.connect(this.gainNode)
-
-      osc.start(now + i * 3)
-      osc.stop(now + i * 3 + 3)
-
-      this.oscillators.push(osc)
+      data[i] = sample * 0.6
     }
   }
 
-  stop() {
-    this.isPlaying = false
-    if (this.loopInterval) {
-      clearInterval(this.loopInterval)
-      this.loopInterval = null
-    }
-    this.oscillators.forEach(osc => {
-      try { osc.stop() } catch {}
-    })
-    this.oscillators = []
-    if (this.ctx) {
-      this.ctx.close()
-      this.ctx = null
-    }
-    this.gainNode = null
-  }
-
-  setVolume(v: number) {
-    if (this.gainNode) {
-      this.gainNode.gain.value = v
-    }
-  }
+  return buffer
 }
-
-const bgm = new AmbientBGM()
 
 export function AudioProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [volume, setVolumeState] = useState(() => {
     const saved = localStorage.getItem('bgm_volume')
-    return saved ? parseFloat(saved) : 0.25
+    return saved ? parseFloat(saved) : 0.3
   })
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const audioCtxRef = useRef<globalThis.AudioContext | null>(null)
+  const sourceRef = useRef<AudioBufferSourceNode | null>(null)
+  const gainRef = useRef<GainNode | null>(null)
+
+  const startBGM = () => {
+    try {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new globalThis.AudioContext()
+      }
+      const ctx = audioCtxRef.current
+
+      if (ctx.state === 'suspended') {
+        ctx.resume()
+      }
+
+      if (!gainRef.current) {
+        gainRef.current = ctx.createGain()
+        gainRef.current.gain.value = volume
+        gainRef.current.connect(ctx.destination)
+      }
+
+      const buffer = createBGMBuffer(ctx)
+      const source = ctx.createBufferSource()
+      source.buffer = buffer
+      source.loop = true
+      source.connect(gainRef.current)
+      source.start()
+
+      sourceRef.current = source
+      setIsPlaying(true)
+    } catch (e) {
+      console.error('BGM error:', e)
+    }
+  }
+
+  const stopBGM = () => {
+    if (sourceRef.current) {
+      try {
+        sourceRef.current.stop()
+      } catch {}
+      sourceRef.current = null
+    }
+    setIsPlaying(false)
+  }
 
   useEffect(() => {
     return () => {
-      bgm.stop()
+      stopBGM()
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close()
+      }
     }
   }, [])
 
   useEffect(() => {
-    bgm.setVolume(volume)
+    if (gainRef.current) {
+      gainRef.current.gain.value = volume
+    }
     localStorage.setItem('bgm_volume', String(volume))
   }, [volume])
 
   const toggle = () => {
     if (isPlaying) {
-      bgm.stop()
+      stopBGM()
     } else {
-      bgm.start(volume)
+      startBGM()
     }
-    setIsPlaying(!isPlaying)
   }
 
   const setVolume = (v: number) => {
