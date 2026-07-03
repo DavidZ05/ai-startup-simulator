@@ -47,7 +47,7 @@ export function EmployeePanel({ company, onHire }: EmployeePanelProps) {
             <div
               key={employee.id}
               onClick={() => setSelectedEmployee(isSelected ? null : employee.id)}
-              className={`p-2 rounded-lg border cursor-pointer transition-all ${
+              className={`p-2 rounded-lg border cursor-pointer transition-all overflow-hidden ${
                 isHired
                   ? 'bg-emerald-500/10 border-emerald-500/30'
                   : isAvailable && canAfford && meetsRequirements

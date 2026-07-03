@@ -35,7 +35,7 @@ export function AchievementsPanel({ company }: AchievementsProps) {
           return (
             <div
               key={achievement.id}
-              className={`relative group p-1.5 rounded-lg text-center transition-all duration-200 ${
+              className={`relative group p-1.5 rounded-lg text-center transition-all duration-200 overflow-hidden ${
                 isUnlocked
                   ? 'bg-amber-500/15 border border-amber-500/40 shadow-lg shadow-amber-500/10'
                   : 'bg-slate-800/30 border border-slate-700/20 opacity-30 hover:opacity-50'

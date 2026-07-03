@@ -42,7 +42,7 @@ export function TechTreePanel({ company, onUnlock }: TechTreeProps) {
             <div
               key={tech.id}
               onClick={() => setSelectedTech(isSelected ? null : tech.id)}
-              className={`p-2 rounded-lg border cursor-pointer transition-all duration-200 ${
+              className={`p-2 rounded-lg border cursor-pointer transition-all duration-200 overflow-hidden ${
                 isUnlocked
                   ? 'bg-emerald-500/10 border-emerald-500/30'
                   : isAvailable && canAfford

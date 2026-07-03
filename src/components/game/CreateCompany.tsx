@@ -123,7 +123,7 @@ export function CreateCompany() {
                   <button
                     key={ind.id}
                     onClick={() => setCompany({ ...company, industry: ind.id })}
-                    className={`p-3.5 rounded-xl border transition-all duration-300 text-left group ${
+                    className={`p-3.5 rounded-xl border transition-all duration-300 text-left group overflow-hidden ${
                       company.industry === ind.id
                         ? 'border-indigo-500/50 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 shadow-lg shadow-indigo-500/20'
                         : 'border-white/5 bg-white/[0.02] hover:bg-white/5 hover:border-white/10'

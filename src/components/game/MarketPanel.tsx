@@ -46,7 +46,7 @@ export function MarketPanel({ company, onExpand }: MarketPanelProps) {
             <div
               key={market.id}
               onClick={() => setSelectedMarket(isSelected ? null : market.id)}
-              className={`p-2 rounded-lg border cursor-pointer transition-all ${
+              className={`p-2 rounded-lg border cursor-pointer transition-all overflow-hidden ${
                 isUnlocked
                   ? 'bg-emerald-500/10 border-emerald-500/30'
                   : isAvailable && canAfford && meetsRequirements
