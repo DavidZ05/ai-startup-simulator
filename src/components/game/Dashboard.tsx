@@ -50,7 +50,7 @@ export function Dashboard({ company }: DashboardProps) {
           const colors = COLOR_MAP[config.color as keyof typeof COLOR_MAP]
 
           return (
-            <div key={key} className={`p-2 rounded-lg ${colors.bg} border ${colors.border} transition-all duration-300 hover:scale-[1.02]`}>
+            <div key={key} className={`p-2 rounded-lg ${colors.bg} border ${colors.border} transition-all duration-300`}>
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm">{config.icon}</span>
