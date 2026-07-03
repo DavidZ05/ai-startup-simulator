@@ -212,18 +212,23 @@ export function processMonth(state: Company, decisions: Decision[], history: Com
   }
 
   if (newState.month % 6 === 0 && newState.product >= 60 && newState.users >= 80 && (!newState.acquisitionOffers || newState.acquisitionOffers.length < 3)) {
-    const acquirer = ACQUIRER_NAMES[Math.floor(Math.random() * ACQUIRER_NAMES.length)]
-    const baseAmount = newState.funds * 2 + newState.users * 1000 + newState.product * 5000
-    const amount = Math.round(baseAmount * (0.8 + Math.random() * 0.4))
+    const existingCompanies = (newState.acquisitionOffers || []).map(o => o.company)
+    const availableAcquirers = ACQUIRER_NAMES.filter(n => !existingCompanies.includes(n))
     
-    const offer = {
-      id: `offer-${Date.now()}`,
-      company: acquirer,
-      amount,
-      terms: amount > 500000 ? 'Full acquisition with earn-out' : 'Acqui-hire with retention bonus',
-      month: newState.month,
+    if (availableAcquirers.length > 0) {
+      const acquirer = availableAcquirers[Math.floor(Math.random() * availableAcquirers.length)]
+      const baseAmount = newState.funds * 2 + newState.users * 1000 + newState.product * 5000
+      const amount = Math.round(baseAmount * (0.8 + Math.random() * 0.4))
+      
+      const offer = {
+        id: `offer-${Date.now()}`,
+        company: acquirer,
+        amount,
+        terms: amount > 500000 ? 'Full acquisition with earn-out' : 'Acqui-hire with retention bonus',
+        month: newState.month,
+      }
+      newState.acquisitionOffers = [...(newState.acquisitionOffers || []), offer]
     }
-    newState.acquisitionOffers = [...(newState.acquisitionOffers || []), offer]
   }
 
   const quarterlyReport = generateQuarterlyReport(newState, [...history, newState])

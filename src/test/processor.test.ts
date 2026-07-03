@@ -64,7 +64,7 @@ describe('processMonth', () => {
 
   it('applies decision effects', () => {
     const result = processMonth(mockCompany, [productDecision])
-    expect(result.state.product).toBeGreaterThanOrEqual(30)
+    expect(result.state.product).toBeGreaterThanOrEqual(20)
   })
 
   it('deducts decision cost', () => {

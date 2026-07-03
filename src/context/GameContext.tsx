@@ -163,13 +163,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
         throw new Error('Game not found')
       }
     }
+    const loadedCompany = { ...savedState.company, lastQuarterReport: null }
     dispatch({
       type: 'LOAD_GAME',
       state: {
         ...initialGameState,
         phase: 'game',
-        company: savedState.company,
-        history: savedState.history || [savedState.company],
+        company: loadedCompany,
+        history: savedState.history || [loadedCompany],
         turn: savedState.turn || 1,
         gameId: gameId,
       },
