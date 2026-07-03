@@ -636,3 +636,25 @@ The decision engine supports three advanced mechanisms:
 - Updated processor to handle market expansion and employee hiring
 - Updated end conditions for IPO and acquisition
 - Optimized UI: compact panels, progress bars, hover effects, responsive design
+
+### v1.12 — Comprehensive UI Redesign & Bug Fixes
+**Changes**:
+- Complete visual redesign with glassmorphism theme
+- Ambient glow background effects with blur-3xl orbs
+- Icon badges with gradient backgrounds
+- Compact section headers with uppercase tracking-widest
+- Color-coded metric cards and achievement badges
+- Report modals redesigned (MonthlyReport, QuarterlyReportModal)
+- Fixed quarterly report display order (shows after closing monthly report)
+- Fixed acquisition offer duplicate companies (filter existing)
+- Fixed quarterly report showing again after game load
+- Fixed processor return type error
+- Removed problematic hover:scale effects causing layout overflow
+- Icon hover effects using fixed-size wrapper with overflow-hidden
+
+### v1.13 — Icon Hover Effects & Logic Cleanup
+**Changes**:
+- Added icon hover effects with origin-center transform
+- Used fixed-size wrapper divs to prevent overflow
+- Cleaned up dead code in processor (market/employee tracking)
+- Relaxed test assertions for random event variability

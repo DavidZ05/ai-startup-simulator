@@ -60,7 +60,13 @@ mini-game-demo/
 │   ├── types/game.ts             # TypeScript types
 │   ├── config/
 │   │   ├── constants.ts          # Game balance constants
-│   │   └── decisions.ts          # Decision & event definitions
+│   │   ├── decisions.ts          # Decision & event definitions
+│   │   ├── achievements.ts       # Achievement system
+│   │   ├── news.ts               # Industry news
+│   │   ├── competitors.ts        # Competitor AI
+│   │   ├── techTree.ts           # Tech tree
+│   │   ├── markets.ts            # Market expansion
+│   │   └── employees.ts          # Employee system
 │   ├── engine/                   # Game logic
 │   │   ├── calculator.ts         # Metric calculations
 │   │   ├── validator.ts          # Decision validation
@@ -68,39 +74,66 @@ mini-game-demo/
 │   │   ├── conditions.ts         # Win/lose conditions
 │   │   └── processor.ts          # Monthly processing
 │   ├── services/
-│   │   ├── api.ts                # Backend API client
-│   │   └── ai.service.ts         # LLM integration
-│   ├── hooks/useGameState.ts     # State reducer
+│   │   └── api.ts                # Backend API client
+│   ├── hooks/
+│   │   └── useOfflineStorage.ts  # Offline storage hook
 │   ├── context/
 │   │   ├── GameContext.tsx        # Game state context
 │   │   └── AuthContext.tsx        # Auth state context
-│   ├── components/
-│   │   ├── ui/ErrorBoundary.tsx   # Error handling
-│   │   ├── auth/LoginForm.tsx     # Login/Register UI
-│   │   └── game/                  # Game UI components
-├── server/                        # Backend
-│   ├── index.ts                   # Express server
-│   ├── db.ts                      # SQLite setup
-│   ├── package.json               # Server-only deps
+│   └── components/
+│       ├── ui/
+│       │   ├── ErrorBoundary.tsx  # Global error boundary
+│       │   ├── GameErrorBoundary.tsx # Component error boundary
+│       │   ├── Skeleton.tsx       # Loading skeletons
+│       │   └── OfflineIndicator.tsx # Online/offline status
+│       ├── auth/LoginForm.tsx     # Login/Register UI
+│       └── game/
+│           ├── GameBoard.tsx      # Main game interface
+│           ├── Dashboard.tsx      # Metric dashboard
+│           ├── DecisionPanel.tsx  # Decision selection
+│           ├── MonthlyReport.tsx  # Monthly report modal
+│           ├── QuarterlyReportModal.tsx # Quarterly report
+│           ├── EventNotification.tsx # Event toasts
+│           ├── AchievementsPanel.tsx # Achievements display
+│           ├── TechTreePanel.tsx  # Tech tree panel
+│           ├── MarketPanel.tsx    # Market expansion
+│           ├── EmployeePanel.tsx  # Employee hiring
+│           ├── IPOPanel.tsx       # IPO/Acquisition
+│           ├── CreateCompany.tsx  # Company creation wizard
+│           ├── GameSelector.tsx   # Game management
+│           └── EndGame.tsx        # Victory/defeat screen
+├── public/
+│   ├── manifest.json             # PWA manifest
+│   └── sw.js                     # Service worker
+├── server/                       # Backend
+│   ├── index.ts                  # Express server
+│   ├── db.ts                     # SQLite setup
+│   ├── middleware/
+│   │   ├── rateLimit.ts          # API rate limiting
+│   │   └── validateState.ts      # Game state validation
 │   └── routes/
-│       ├── auth.ts                # Register/login
-│       ├── game.ts                # Game CRUD
-│       ├── ai.ts                  # LLM proxy
-│       └── leaderboard.ts         # Rankings
-├── DESIGN.md                      # Game design document
-├── API.md                         # API documentation
-├── DEVLOG.log                     # Development log
+│       ├── auth.ts               # JWT authentication
+│       ├── game.ts               # Game CRUD
+│       ├── ai.ts                 # LLM proxy
+│       ├── leaderboard.ts        # Score rankings
+│       └── storage.ts            # Storage stats
+├── DESIGN.md                     # Game design document
+├── API.md                        # API documentation
 └── README.md
 ```
 
 ## How to Play
 
-1. **Create your startup** — name, industry, target users
-2. **Each round = 1 month** — choose 3 business decisions
-3. **Watch your metrics** — funds, users, revenue, morale, product, heat, competition
-4. **Random events** — viral moments, server crashes, competitor entries
-5. **Win** — achieve product-market fit, unicorn status, or profitability within 36 months
-6. **Lose** — run out of money, team quits, or timeout
+1. **Register** — create account (min 3 chars username, 6 chars password)
+2. **Create startup** — name, industry, target users
+3. **Each round = 1 month** — choose 3 business decisions
+4. **Watch metrics** — funds, users, revenue, morale, product, heat, competition
+5. **Expand markets** — unlock 8 global markets (US, EU, Asia, etc.)
+6. **Hire employees** — 10 roles from Junior Dev to CTO
+7. **Research tech** — unlock 10 technologies in the tech tree
+8. **Random events** — viral moments, server crashes, competitor entries
+9. **Win** — achieve product-market fit, unicorn status, IPO, or acquisition
+10. **Lose** — run out of money, team quits, or timeout
 
 ## Game Mechanics
 
@@ -114,18 +147,31 @@ mini-game-demo/
 | 🔥 Market Heat | Brand visibility (drives user growth) |
 | ⚔️ Competition | Market competition (suppresses heat) |
 
-## New Features
+## Victory Conditions
+
+| Condition | Requirements |
+|-----------|--------------|
+| Product-Market Fit | Product ≥ 80%, Users ≥ 100, Heat ≥ 60 |
+| Unicorn Status | Revenue ≥ 50%, Users ≥ 150, Heat ≥ 70 |
+| Series A | Funds ≥ $500K, Product ≥ 70%, Users ≥ 80 |
+| Sustainable | Month ≥ 24, Product ≥ 60%, Users ≥ 50, Funds > $100K |
+| IPO | Month ≥ 24, Product ≥ 70%, Users ≥ 100, Funds ≥ $300K |
+| Acquisition | Accept offer from tech giant |
+
+## Features
 
 | Feature | Description |
 |---------|-------------|
 | 🏆 Achievements | 14 milestones to unlock |
-| 📰 Industry News | Monthly market events |
-| ⚔️ Competitors | AI rivals that challenge you |
+| 📰 Industry News | 10 types of monthly market events |
+| ⚔️ Competitors | AI rivals with 3 strategies |
 | 🌳 Tech Tree | 10 technologies to research |
 | 📊 Quarterly Reports | Detailed analysis every 3 months |
 | 🌍 Market Expansion | 8 global markets to enter |
 | 🏢 Employee System | 10 roles from Junior Dev to CTO |
-| 💼 IPO/Acquisition | New exit options for victory |
+| 💼 IPO/Acquisition | Exit options for victory |
+| 📱 PWA Support | Install as app, offline mode |
+| 🔒 Auth System | JWT authentication, game persistence |
 
 ## LLM Integration
 
