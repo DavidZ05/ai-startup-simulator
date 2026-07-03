@@ -22,7 +22,9 @@ export class GameErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error(`Error in ${this.props.name || 'component'}:`, error, errorInfo)
+    if (import.meta.env.DEV) {
+      console.error(`Error in ${this.props.name || 'component'}:`, error, errorInfo)
+    }
   }
 
   render() {

@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useGameContext } from '../../context/GameContext'
 import { processMonth } from '../../engine/processor'
+import { applyEffects } from '../../engine/calculator'
+import { TECH_TREE } from '../../config/techTree'
+import { MARKETS } from '../../config/markets'
+import { EMPLOYEE_ROLES } from '../../config/employees'
 import { Dashboard } from './Dashboard'
 import { DecisionPanel } from './DecisionPanel'
 import { MonthlyReport } from './MonthlyReport'
@@ -64,61 +68,49 @@ export function GameBoard() {
   const handleUnlockTech = (techId: string, cost: number) => {
     if (!company || company.funds < cost) return
 
-    import('../../engine/calculator').then(({ applyEffects }) => {
-      import('../../config/techTree').then(({ TECH_TREE }) => {
-        const tech = TECH_TREE.find(t => t.id === techId)
-        if (!tech) return
+    const tech = TECH_TREE.find(t => t.id === techId)
+    if (!tech) return
 
-        const newState = {
-          ...company,
-          funds: company.funds - cost,
-          unlockedTech: [...(company.unlockedTech || []), techId],
-        }
+    const newState = {
+      ...company,
+      funds: company.funds - cost,
+      unlockedTech: [...(company.unlockedTech || []), techId],
+    }
 
-        const updatedCompany = applyEffects(newState, tech.effects)
-        dispatch({ type: 'LOAD_GAME', state: { ...state, company: updatedCompany } })
-      })
-    })
+    const updatedCompany = applyEffects(newState, tech.effects)
+    dispatch({ type: 'LOAD_GAME', state: { ...state, company: updatedCompany } })
   }
 
   const handleExpandMarket = (marketId: string, cost: number) => {
     if (!company || company.funds < cost) return
 
-    import('../../engine/calculator').then(({ applyEffects }) => {
-      import('../../config/markets').then(({ MARKETS }) => {
-        const market = MARKETS.find(m => m.id === marketId)
-        if (!market) return
+    const market = MARKETS.find(m => m.id === marketId)
+    if (!market) return
 
-        const newState = {
-          ...company,
-          funds: company.funds - cost,
-          unlockedMarkets: [...(company.unlockedMarkets || []), marketId],
-        }
+    const newState = {
+      ...company,
+      funds: company.funds - cost,
+      unlockedMarkets: [...(company.unlockedMarkets || []), marketId],
+    }
 
-        const updatedCompany = applyEffects(newState, market.effects)
-        dispatch({ type: 'LOAD_GAME', state: { ...state, company: updatedCompany } })
-      })
-    })
+    const updatedCompany = applyEffects(newState, market.effects)
+    dispatch({ type: 'LOAD_GAME', state: { ...state, company: updatedCompany } })
   }
 
   const handleHireEmployee = (employeeId: string, cost: number) => {
     if (!company || company.funds < cost) return
 
-    import('../../engine/calculator').then(({ applyEffects }) => {
-      import('../../config/employees').then(({ EMPLOYEE_ROLES }) => {
-        const employee = EMPLOYEE_ROLES.find(e => e.id === employeeId)
-        if (!employee) return
+    const employee = EMPLOYEE_ROLES.find(e => e.id === employeeId)
+    if (!employee) return
 
-        const newState = {
-          ...company,
-          funds: company.funds - cost,
-          employees: [...(company.employees || []), employeeId],
-        }
+    const newState = {
+      ...company,
+      funds: company.funds - cost,
+      employees: [...(company.employees || []), employeeId],
+    }
 
-        const updatedCompany = applyEffects(newState, employee.effects)
-        dispatch({ type: 'LOAD_GAME', state: { ...state, company: updatedCompany } })
-      })
-    })
+    const updatedCompany = applyEffects(newState, employee.effects)
+    dispatch({ type: 'LOAD_GAME', state: { ...state, company: updatedCompany } })
   }
 
   const handleGoPublic = () => {
@@ -169,13 +161,13 @@ export function GameBoard() {
       </div>
 
       <div className="relative bg-[#12122a]/80 backdrop-blur-2xl border-b border-white/5 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                <span className="text-sm">🚀</span>
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                <span className="text-xs sm:text-sm">🚀</span>
               </div>
-              <div className="text-lg font-black bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+              <div className="text-sm sm:text-lg font-black bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
                 {company.name}
               </div>
             </div>
@@ -206,18 +198,22 @@ export function GameBoard() {
         </div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 py-5">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          <div className="lg:col-span-3 space-y-4">
+      <div className="relative max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-5">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5">
+          <div className="lg:col-span-3 space-y-3 lg:space-y-4">
             <GameErrorBoundary name="Dashboard">
               <Dashboard company={company} />
             </GameErrorBoundary>
-            <GameErrorBoundary name="Achievements">
-              <AchievementsPanel company={company} />
-            </GameErrorBoundary>
-            <GameErrorBoundary name="Markets">
-              <MarketPanel company={company} onExpand={handleExpandMarket} />
-            </GameErrorBoundary>
+            <div className="hidden lg:block">
+              <GameErrorBoundary name="Achievements">
+                <AchievementsPanel company={company} />
+              </GameErrorBoundary>
+            </div>
+            <div className="hidden lg:block">
+              <GameErrorBoundary name="Markets">
+                <MarketPanel company={company} onExpand={handleExpandMarket} />
+              </GameErrorBoundary>
+            </div>
           </div>
           <div className="lg:col-span-6">
             <GameErrorBoundary name="DecisionPanel">
@@ -227,8 +223,16 @@ export function GameBoard() {
                 disabled={processing}
               />
             </GameErrorBoundary>
+            <div className="lg:hidden mt-4 space-y-3">
+              <GameErrorBoundary name="Achievements">
+                <AchievementsPanel company={company} />
+              </GameErrorBoundary>
+              <GameErrorBoundary name="Markets">
+                <MarketPanel company={company} onExpand={handleExpandMarket} />
+              </GameErrorBoundary>
+            </div>
           </div>
-          <div className="lg:col-span-3 space-y-4">
+          <div className="lg:col-span-3 space-y-3 lg:space-y-4">
             <GameErrorBoundary name="TechTree">
               <TechTreePanel company={company} onUnlock={handleUnlockTech} />
             </GameErrorBoundary>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { GameProvider, useGameContext } from './context/GameContext'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { AudioProvider, AudioControls } from './components/ui/AudioPlayer'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
 import { OfflineIndicator } from './components/ui/OfflineIndicator'
 import { LoginForm } from './components/auth/LoginForm'
@@ -84,8 +85,11 @@ export default function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <OfflineIndicator />
-        <AppContent />
+        <AudioProvider>
+          <OfflineIndicator />
+          <AppContent />
+          <AudioControls />
+        </AudioProvider>
       </AuthProvider>
     </ErrorBoundary>
   )
