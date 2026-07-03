@@ -42,7 +42,7 @@ export function AchievementsPanel({ company }: AchievementsProps) {
               }`}
               title={`${achievement.name}: ${achievement.description}`}
             >
-              <div className="text-sm origin-center group-hover:scale-125 transition-transform duration-200">{achievement.emoji}</div>
+              <div className="text-sm group-hover:brightness-125 transition-all duration-200">{achievement.emoji}</div>
               {isUnlocked && (
                 <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-[#1e1e3a]" />
               )}

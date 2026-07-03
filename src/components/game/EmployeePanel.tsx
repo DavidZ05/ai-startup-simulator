@@ -59,7 +59,7 @@ export function EmployeePanel({ company, onHire }: EmployeePanelProps) {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm origin-center group-hover:scale-125 transition-transform duration-200">{employee.emoji}</span>
+                  <span className="text-sm group-hover:brightness-125 transition-all duration-200">{employee.emoji}</span>
                   <span className="text-xs font-medium text-white">{employee.name}</span>
                 </div>
                 {isHired ? (
