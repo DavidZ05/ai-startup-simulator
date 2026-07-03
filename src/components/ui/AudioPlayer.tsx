@@ -20,6 +20,9 @@ class AmbientBGM {
     if (this.isPlaying) return
 
     this.ctx = new globalThis.AudioContext()
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume()
+    }
     this.gainNode = this.ctx.createGain()
     this.gainNode.gain.value = volume
     this.gainNode.connect(this.ctx.destination)
@@ -36,8 +39,8 @@ class AmbientBGM {
       osc.frequency.value = freq
 
       oscGain.gain.setValueAtTime(0, now)
-      oscGain.gain.linearRampToValueAtTime(0.08, now + 2 + i * 0.5)
-      oscGain.gain.linearRampToValueAtTime(0.04, now + 8 + i * 0.5)
+      oscGain.gain.linearRampToValueAtTime(0.15, now + 2 + i * 0.5)
+      oscGain.gain.linearRampToValueAtTime(0.1, now + 8 + i * 0.5)
       oscGain.gain.linearRampToValueAtTime(0, now + 16)
 
       osc.connect(oscGain)
@@ -76,7 +79,7 @@ class AmbientBGM {
       osc.frequency.value = freq * (Math.random() > 0.5 ? 0.5 : 1)
 
       oscGain.gain.setValueAtTime(0, now + i * 3)
-      oscGain.gain.linearRampToValueAtTime(0.06, now + i * 3 + 0.5)
+      oscGain.gain.linearRampToValueAtTime(0.12, now + i * 3 + 0.5)
       oscGain.gain.linearRampToValueAtTime(0, now + i * 3 + 2.5)
 
       osc.connect(oscGain)
@@ -119,7 +122,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [volume, setVolumeState] = useState(() => {
     const saved = localStorage.getItem('bgm_volume')
-    return saved ? parseFloat(saved) : 0.15
+    return saved ? parseFloat(saved) : 0.25
   })
 
   useEffect(() => {
