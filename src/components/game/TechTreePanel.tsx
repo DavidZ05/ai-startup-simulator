@@ -42,7 +42,7 @@ export function TechTreePanel({ company, onUnlock }: TechTreeProps) {
             <div
               key={tech.id}
               onClick={() => setSelectedTech(isSelected ? null : tech.id)}
-              className={`p-2 rounded-lg border cursor-pointer transition-all duration-200 overflow-hidden ${
+              className={`p-2 rounded-lg border cursor-pointer transition-all duration-200 ${
                 isUnlocked
                   ? 'bg-emerald-500/10 border-emerald-500/30'
                   : isAvailable && canAfford
@@ -54,7 +54,9 @@ export function TechTreePanel({ company, onUnlock }: TechTreeProps) {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm group-hover:brightness-125 transition-all duration-200">{tech.emoji}</span>
+                  <div className="w-5 h-5 flex items-center justify-center overflow-hidden">
+                    <span className="text-sm origin-center group-hover:scale-[1.4] transition-transform duration-200">{tech.emoji}</span>
+                  </div>
                   <span className="text-[11px] font-medium text-white">{tech.name}</span>
                 </div>
                 {isUnlocked ? (

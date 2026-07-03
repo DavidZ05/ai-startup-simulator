@@ -35,14 +35,16 @@ export function AchievementsPanel({ company }: AchievementsProps) {
           return (
             <div
               key={achievement.id}
-              className={`relative group p-1.5 rounded-lg text-center transition-all duration-200 overflow-hidden ${
+              className={`relative group p-1.5 rounded-lg text-center transition-all duration-200 ${
                 isUnlocked
                   ? 'bg-amber-500/15 border border-amber-500/40 shadow-lg shadow-amber-500/10'
                   : 'bg-slate-800/30 border border-slate-700/20 opacity-30 hover:opacity-50'
               }`}
               title={`${achievement.name}: ${achievement.description}`}
             >
-              <div className="text-sm group-hover:brightness-125 transition-all duration-200">{achievement.emoji}</div>
+              <div className="w-6 h-6 flex items-center justify-center overflow-hidden">
+                <div className="text-sm origin-center group-hover:scale-[1.4] transition-transform duration-200">{achievement.emoji}</div>
+              </div>
               {isUnlocked && (
                 <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-[#1e1e3a]" />
               )}

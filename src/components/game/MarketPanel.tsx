@@ -46,7 +46,7 @@ export function MarketPanel({ company, onExpand }: MarketPanelProps) {
             <div
               key={market.id}
               onClick={() => setSelectedMarket(isSelected ? null : market.id)}
-              className={`p-2 rounded-lg border cursor-pointer transition-all overflow-hidden ${
+              className={`p-2 rounded-lg border cursor-pointer transition-all ${
                 isUnlocked
                   ? 'bg-emerald-500/10 border-emerald-500/30'
                   : isAvailable && canAfford && meetsRequirements
@@ -58,7 +58,9 @@ export function MarketPanel({ company, onExpand }: MarketPanelProps) {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm group-hover:brightness-125 transition-all duration-200">{market.emoji}</span>
+                  <div className="w-5 h-5 flex items-center justify-center overflow-hidden">
+                    <span className="text-sm origin-center group-hover:scale-[1.4] transition-transform duration-200">{market.emoji}</span>
+                  </div>
                   <span className="text-xs font-medium text-white">{market.name}</span>
                 </div>
                 {isUnlocked ? (

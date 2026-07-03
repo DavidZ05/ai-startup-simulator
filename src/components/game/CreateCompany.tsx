@@ -123,13 +123,15 @@ export function CreateCompany() {
                   <button
                     key={ind.id}
                     onClick={() => setCompany({ ...company, industry: ind.id })}
-                    className={`p-3.5 rounded-xl border transition-all duration-300 text-left group overflow-hidden ${
+                    className={`p-3.5 rounded-xl border transition-all duration-300 text-left group ${
                       company.industry === ind.id
                         ? 'border-indigo-500/50 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 shadow-lg shadow-indigo-500/20'
                         : 'border-white/5 bg-white/[0.02] hover:bg-white/5 hover:border-white/10'
                     }`}
                   >
-                    <div className="text-2xl mb-1.5 group-hover:brightness-125 transition-all duration-200">{ind.emoji}</div>
+                    <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
+                      <div className="text-2xl origin-center group-hover:scale-[1.4] transition-transform duration-200">{ind.emoji}</div>
+                    </div>
                     <div className="font-semibold text-white text-sm">{ind.name}</div>
                     <div className="text-[10px] text-slate-500 mt-0.5">{ind.description}</div>
                   </button>
