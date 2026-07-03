@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { DECISIONS } from '../../config/decisions'
 import { getDecisionCost } from '../../engine/calculator'
 import { checkCooldown, checkRequirements } from '../../engine/validator'
+import { sounds } from '../../utils/sounds'
 import type { Company, Decision } from '../../types/game'
 
 interface DecisionPanelProps {
@@ -45,6 +46,8 @@ export function DecisionPanel({ company, onDecide, disabled }: DecisionPanelProp
     if (disabled) return
     if (!decision.canAfford || decision.onCooldown || !decision.meetsRequirements) return
 
+    sounds.select()
+
     if (selected.find(s => s.id === decision.id)) {
       setSelected(selected.filter(s => s.id !== decision.id))
     } else if (remaining > 0) {
@@ -53,6 +56,7 @@ export function DecisionPanel({ company, onDecide, disabled }: DecisionPanelProp
   }
 
   const handleConfirm = () => {
+    sounds.confirm()
     onDecide(selected)
     setSelected([])
   }

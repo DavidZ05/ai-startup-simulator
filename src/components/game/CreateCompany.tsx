@@ -1,6 +1,7 @@
 import { useGameContext } from '../../context/GameContext'
 import { INDUSTRIES } from '../../config/decisions'
 import { GAME_CONFIG } from '../../config/constants'
+import { sounds } from '../../utils/sounds'
 import type { Company } from '../../types/game'
 import { useState } from 'react'
 
@@ -20,6 +21,7 @@ export function CreateCompany() {
     : company.targetUsers.length >= 2
 
   const handleStart = async () => {
+    sounds.confirm()
     const selectedIndustry = INDUSTRIES.find(i => i.id === company.industry)
     const newCompany: Company = {
       name: company.name,
@@ -171,7 +173,7 @@ export function CreateCompany() {
           <div className="flex justify-between mt-6">
             {step > 1 ? (
               <button
-                onClick={() => setStep(step - 1)}
+                onClick={() => { sounds.click(); setStep(step - 1) }}
                 className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-sm transition-all duration-200 active:scale-[0.98]"
               >
                 ← Back
@@ -181,7 +183,7 @@ export function CreateCompany() {
             )}
             {step < 3 ? (
               <button
-                onClick={() => setStep(step + 1)}
+                onClick={() => { sounds.click(); setStep(step + 1) }}
                 disabled={!canProceed}
                 className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 disabled:from-white/5 disabled:to-white/5 disabled:text-slate-600 text-white font-semibold text-sm transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 disabled:shadow-none active:scale-[0.98]"
               >

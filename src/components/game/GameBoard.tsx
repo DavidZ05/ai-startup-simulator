@@ -5,6 +5,7 @@ import { applyEffects } from '../../engine/calculator'
 import { TECH_TREE } from '../../config/techTree'
 import { MARKETS } from '../../config/markets'
 import { EMPLOYEE_ROLES } from '../../config/employees'
+import { sounds } from '../../utils/sounds'
 import { Dashboard } from './Dashboard'
 import { DecisionPanel } from './DecisionPanel'
 import { MonthlyReport } from './MonthlyReport'
@@ -27,6 +28,7 @@ export function GameBoard() {
 
   useEffect(() => {
     if (currentEvent) {
+      sounds.event()
       const timer = setTimeout(() => dispatch({ type: 'SET_EVENT', event: null }), 4000)
       return () => clearTimeout(timer)
     }
@@ -71,6 +73,8 @@ export function GameBoard() {
     const tech = TECH_TREE.find(t => t.id === techId)
     if (!tech) return
 
+    sounds.levelUp()
+
     const newState = {
       ...company,
       funds: company.funds - cost,
@@ -86,6 +90,8 @@ export function GameBoard() {
 
     const market = MARKETS.find(m => m.id === marketId)
     if (!market) return
+
+    sounds.success()
 
     const newState = {
       ...company,
@@ -103,6 +109,8 @@ export function GameBoard() {
     const employee = EMPLOYEE_ROLES.find(e => e.id === employeeId)
     if (!employee) return
 
+    sounds.coin()
+
     const newState = {
       ...company,
       funds: company.funds - cost,
@@ -115,6 +123,7 @@ export function GameBoard() {
 
   const handleGoPublic = () => {
     if (!company || !company.ipoReady) return
+    sounds.success()
     dispatch({ type: 'END_GAME', result: { type: 'success', reason: '📈 IPO successful! Your startup is now publicly traded!' }, company })
   }
 
@@ -123,6 +132,7 @@ export function GameBoard() {
     const offer = company.acquisitionOffers?.find(o => o.id === offerId)
     if (!offer) return
     
+    sounds.achievement()
     const acquiredCompany = {
       ...company,
       funds: company.funds + offer.amount,

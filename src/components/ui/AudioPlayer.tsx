@@ -9,40 +9,135 @@ interface AudioContextType {
 
 const AudioContext = createContext<AudioContextType | null>(null)
 
+class AmbientBGM {
+  private ctx: globalThis.AudioContext | null = null
+  private gainNode: GainNode | null = null
+  private oscillators: OscillatorNode[] = []
+  private isPlaying = false
+  private loopInterval: ReturnType<typeof setInterval> | null = null
+
+  start(volume: number = 0.15) {
+    if (this.isPlaying) return
+
+    this.ctx = new globalThis.AudioContext()
+    this.gainNode = this.ctx.createGain()
+    this.gainNode.gain.value = volume
+    this.gainNode.connect(this.ctx.destination)
+
+    const notes = [261.63, 329.63, 392.00, 523.25]
+    const now = this.ctx.currentTime
+
+    notes.forEach((freq, i) => {
+      if (!this.ctx || !this.gainNode) return
+      const osc = this.ctx.createOscillator()
+      const oscGain = this.ctx.createGain()
+
+      osc.type = 'sine'
+      osc.frequency.value = freq
+
+      oscGain.gain.setValueAtTime(0, now)
+      oscGain.gain.linearRampToValueAtTime(0.08, now + 2 + i * 0.5)
+      oscGain.gain.linearRampToValueAtTime(0.04, now + 8 + i * 0.5)
+      oscGain.gain.linearRampToValueAtTime(0, now + 16)
+
+      osc.connect(oscGain)
+      oscGain.connect(this.gainNode)
+
+      osc.start(now + i * 0.3)
+      osc.stop(now + 16)
+
+      this.oscillators.push(osc)
+    })
+
+    this.isPlaying = true
+
+    this.loopInterval = setInterval(() => {
+      if (!this.isPlaying || !this.ctx) {
+        if (this.loopInterval) clearInterval(this.loopInterval)
+        return
+      }
+      this.playLoop()
+    }, 14000)
+  }
+
+  private playLoop() {
+    if (!this.ctx || !this.gainNode) return
+
+    const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]
+    const now = this.ctx.currentTime
+
+    for (let i = 0; i < 4; i++) {
+      if (!this.ctx || !this.gainNode) return
+      const osc = this.ctx.createOscillator()
+      const oscGain = this.ctx.createGain()
+      const freq = notes[Math.floor(Math.random() * notes.length)]
+
+      osc.type = 'sine'
+      osc.frequency.value = freq * (Math.random() > 0.5 ? 0.5 : 1)
+
+      oscGain.gain.setValueAtTime(0, now + i * 3)
+      oscGain.gain.linearRampToValueAtTime(0.06, now + i * 3 + 0.5)
+      oscGain.gain.linearRampToValueAtTime(0, now + i * 3 + 2.5)
+
+      osc.connect(oscGain)
+      oscGain.connect(this.gainNode)
+
+      osc.start(now + i * 3)
+      osc.stop(now + i * 3 + 3)
+
+      this.oscillators.push(osc)
+    }
+  }
+
+  stop() {
+    this.isPlaying = false
+    if (this.loopInterval) {
+      clearInterval(this.loopInterval)
+      this.loopInterval = null
+    }
+    this.oscillators.forEach(osc => {
+      try { osc.stop() } catch {}
+    })
+    this.oscillators = []
+    if (this.ctx) {
+      this.ctx.close()
+      this.ctx = null
+    }
+    this.gainNode = null
+  }
+
+  setVolume(v: number) {
+    if (this.gainNode) {
+      this.gainNode.gain.value = v
+    }
+  }
+}
+
+const bgm = new AmbientBGM()
+
 export function AudioProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [volume, setVolumeState] = useState(() => {
     const saved = localStorage.getItem('bgm_volume')
-    return saved ? parseFloat(saved) : 0.3
+    return saved ? parseFloat(saved) : 0.15
   })
-  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {
-    const audio = new Audio()
-    audio.loop = true
-    audio.volume = volume
-    audioRef.current = audio
-
     return () => {
-      audio.pause()
-      audio.src = ''
+      bgm.stop()
     }
   }, [])
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume
-      localStorage.setItem('bgm_volume', String(volume))
-    }
+    bgm.setVolume(volume)
+    localStorage.setItem('bgm_volume', String(volume))
   }, [volume])
 
   const toggle = () => {
-    if (!audioRef.current) return
-
     if (isPlaying) {
-      audioRef.current.pause()
+      bgm.stop()
     } else {
-      audioRef.current.play().catch(() => {})
+      bgm.start(volume)
     }
     setIsPlaying(!isPlaying)
   }
