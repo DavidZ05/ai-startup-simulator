@@ -18,7 +18,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {
-    const audio = new Audio('/audio/ambient.mp3')
+    const audio = new Audio('/audio/chill.wav')
     audio.loop = true
     audio.volume = volume
     audio.preload = 'auto'
