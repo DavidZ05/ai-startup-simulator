@@ -7,49 +7,7 @@ interface AudioContextType {
   setVolume: (v: number) => void
 }
 
-const AudioContext = createContext<AudioContextType | null>(null)
-
-function createBGMBuffer(ctx: AudioContext): AudioBuffer {
-  const sampleRate = ctx.sampleRate
-  const duration = 8
-  const buffer = ctx.createBuffer(2, sampleRate * duration, sampleRate)
-
-  const chordProgressions = [
-    [261.63, 329.63, 392.00],
-    [293.66, 369.99, 440.00],
-    [329.63, 415.30, 493.88],
-    [349.23, 440.00, 523.25],
-  ]
-
-  for (let channel = 0; channel < 2; channel++) {
-    const data = buffer.getChannelData(channel)
-
-    for (let i = 0; i < data.length; i++) {
-      const t = i / sampleRate
-      const chordIndex = Math.floor((t / duration) * chordProgressions.length) % chordProgressions.length
-      const chord = chordProgressions[chordIndex]
-
-      let sample = 0
-      for (const freq of chord) {
-        sample += Math.sin(2 * Math.PI * freq * t) * 0.08
-        sample += Math.sin(2 * Math.PI * freq * 0.5 * t) * 0.04
-      }
-
-      const melodyFreqs = [523.25, 587.33, 659.26, 698.46, 783.99]
-      const melodyIndex = Math.floor(t * 2) % melodyFreqs.length
-      const melodyEnv = Math.max(0, 1 - ((t * 2) % 1) * 2)
-      sample += Math.sin(2 * Math.PI * melodyFreqs[melodyIndex] * t) * 0.05 * melodyEnv
-
-      const fadeIn = Math.min(1, t / 0.5)
-      const fadeOut = Math.min(1, (duration - t) / 0.5)
-      sample *= fadeIn * fadeOut
-
-      data[i] = sample * 0.6
-    }
-  }
-
-  return buffer
-}
+const AudioCtx = createContext<AudioContextType | null>(null)
 
 export function AudioProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -58,73 +16,36 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     return saved ? parseFloat(saved) : 0.3
   })
   const audioRef = useRef<HTMLAudioElement | null>(null)
-  const audioCtxRef = useRef<globalThis.AudioContext | null>(null)
-  const sourceRef = useRef<AudioBufferSourceNode | null>(null)
-  const gainRef = useRef<GainNode | null>(null)
-
-  const startBGM = () => {
-    try {
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new globalThis.AudioContext()
-      }
-      const ctx = audioCtxRef.current
-
-      if (ctx.state === 'suspended') {
-        ctx.resume()
-      }
-
-      if (!gainRef.current) {
-        gainRef.current = ctx.createGain()
-        gainRef.current.gain.value = volume
-        gainRef.current.connect(ctx.destination)
-      }
-
-      const buffer = createBGMBuffer(ctx)
-      const source = ctx.createBufferSource()
-      source.buffer = buffer
-      source.loop = true
-      source.connect(gainRef.current)
-      source.start()
-
-      sourceRef.current = source
-      setIsPlaying(true)
-    } catch (e) {
-      console.error('BGM error:', e)
-    }
-  }
-
-  const stopBGM = () => {
-    if (sourceRef.current) {
-      try {
-        sourceRef.current.stop()
-      } catch {}
-      sourceRef.current = null
-    }
-    setIsPlaying(false)
-  }
 
   useEffect(() => {
+    const audio = new Audio('/audio/ambient.mp3')
+    audio.loop = true
+    audio.volume = volume
+    audio.preload = 'auto'
+    audioRef.current = audio
+
     return () => {
-      stopBGM()
-      if (audioCtxRef.current) {
-        audioCtxRef.current.close()
-      }
+      audio.pause()
+      audio.src = ''
     }
   }, [])
 
   useEffect(() => {
-    if (gainRef.current) {
-      gainRef.current.gain.value = volume
+    if (audioRef.current) {
+      audioRef.current.volume = volume
+      localStorage.setItem('bgm_volume', String(volume))
     }
-    localStorage.setItem('bgm_volume', String(volume))
   }, [volume])
 
   const toggle = () => {
+    if (!audioRef.current) return
+
     if (isPlaying) {
-      stopBGM()
+      audioRef.current.pause()
     } else {
-      startBGM()
+      audioRef.current.play().catch(() => {})
     }
+    setIsPlaying(!isPlaying)
   }
 
   const setVolume = (v: number) => {
@@ -132,14 +53,14 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AudioContext.Provider value={{ isPlaying, volume, toggle, setVolume }}>
+    <AudioCtx.Provider value={{ isPlaying, volume, toggle, setVolume }}>
       {children}
-    </AudioContext.Provider>
+    </AudioCtx.Provider>
   )
 }
 
 export function useAudio() {
-  const context = useContext(AudioContext)
+  const context = useContext(AudioCtx)
   if (!context) {
     throw new Error('useAudio must be used within AudioProvider')
   }
