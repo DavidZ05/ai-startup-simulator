@@ -53,12 +53,6 @@ export function GameBoard() {
       const result = processMonth(company, decisions, state.history)
       dispatch({ type: 'MONTH_PROCESSED', result })
 
-      if (result.state.lastQuarterReport !== null && result.state.lastQuarterReport !== undefined) {
-        setTimeout(() => {
-          setQuarterlyReport(result.state.lastQuarterReport!)
-        }, 1200)
-      }
-
       if (result.endCondition) {
         setTimeout(() => {
           dispatch({ type: 'END_GAME', result: result.endCondition!, company: result.state })
@@ -145,6 +139,9 @@ export function GameBoard() {
   }
 
   const handleCloseReport = () => {
+    if (company?.lastQuarterReport) {
+      setQuarterlyReport(company.lastQuarterReport)
+    }
     dispatch({ type: 'CLOSE_REPORT' })
   }
 
