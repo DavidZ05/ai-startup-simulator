@@ -30,15 +30,15 @@ export class GameErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return this.props.fallback || (
-        <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+        <div className="p-4 bg-danger-soft border border-danger-soft rounded-xl">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-red-400">⚠️</span>
-            <span className="text-sm font-semibold text-red-400">Something went wrong</span>
+            <span className="text-danger">⚠️</span>
+            <span className="text-sm font-semibold text-danger">Something went wrong</span>
           </div>
-          <p className="text-xs text-slate-400 mb-3">{this.state.error?.message}</p>
+          <p className="text-xs text-muted mb-3">{this.state.error?.message}</p>
           <button
             onClick={() => this.setState({ hasError: false, error: null })}
-            className="px-3 py-1 text-xs bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+            className="px-3 py-1 text-xs bg-paper hover:bg-paper text-ink rounded-lg transition-colors"
           >
             Try Again
           </button>

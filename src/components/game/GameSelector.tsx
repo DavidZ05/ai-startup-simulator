@@ -64,140 +64,15 @@ export function GameSelector({ onSelectGame, onNewGame }: GameSelectorProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#0f0f23] via-[#1a1a3e] to-[#0f0f23]">
-      <div className="w-full max-w-md animate-fade-in">
-        <div className="text-center mb-8">
-          <div className="text-6xl mb-4">🚀</div>
-          <h1 className="text-4xl font-black bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent mb-2">
-            AI Startup Simulator
-          </h1>
-          <p className="text-slate-400">Welcome, {user?.username}</p>
-        </div>
-
-        <div className="bg-[#1e1e3a]/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6 shadow-2xl">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-white">Your Games</h2>
-            <button
-              onClick={logout}
-              className="text-xs text-slate-400 hover:text-red-400 transition-colors"
-            >
-              Sign out
-            </button>
-          </div>
-
-          {storageStats && (
-            <div className="mb-4 p-3 bg-slate-800/50 rounded-xl flex items-center justify-between text-xs">
-              <span className="text-slate-400">
-                {storageStats.games} games · {storageStats.totalSize}
-              </span>
-              <button
-                onClick={handleCleanup}
-                className="text-indigo-400 hover:text-indigo-300 transition-colors"
-              >
-                Clean up
-              </button>
-            </div>
-          )}
-
-          <div className="mb-4 p-3 bg-slate-800/30 rounded-xl flex items-center justify-between">
-            <div className="flex-1 mr-4">
-              <div className="text-sm font-medium text-white">Auto-cleanup</div>
-              <div className="text-xs text-slate-400">Delete games older than 90 days</div>
-            </div>
-            <button
-              onClick={() => setAutoCleanup(!autoCleanup)}
-              className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${
-                autoCleanup ? 'bg-indigo-500' : 'bg-slate-600'
-              }`}
-            >
-              <div
-                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-all duration-200 ${
-                  autoCleanup ? 'translate-x-[20px]' : 'translate-x-0'
-                }`}
-              />
-            </button>
-          </div>
-
-          {loading ? (
-            <div className="text-center py-8 text-slate-400">Loading games...</div>
-          ) : games.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-slate-400 mb-4">No saved games yet</p>
-              <button
-                onClick={onNewGame}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-semibold transition-all duration-200 shadow-lg shadow-purple-500/20 active:scale-[0.98]"
-              >
-                🚀 Start New Game
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {games.map(game => (
-                <div
-                  key={game.id}
-                  onClick={() => onSelectGame(game.id)}
-                  className="p-4 rounded-xl border border-slate-600/50 bg-[#12122a]/50 hover:border-indigo-500/50 hover:bg-[#1a1a3e] cursor-pointer transition-all duration-200 group"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-semibold text-white group-hover:text-indigo-400 transition-colors">
-                        {game.company_name}
-                      </div>
-                      <div className="text-xs text-slate-400 mt-1">
-                        {game.industry} · Saved {new Date(game.updated_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <button
-                      onClick={(e) => handleDelete(e, game.id)}
-                      className="opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-red-400 transition-all"
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </div>
-              ))}
-
-              <button
-                onClick={onNewGame}
-                className="w-full p-4 rounded-xl border-2 border-dashed border-slate-600/50 text-slate-400 hover:border-indigo-500/50 hover:text-indigo-400 transition-all duration-200"
-              >
-                + New Game
-              </button>
-            </div>
-          )}
-
-          {games.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-slate-700/50">
-              {showDeleteConfirm ? (
-                <div className="space-y-2">
-                  <p className="text-xs text-red-400 text-center">This will delete ALL your game data. Are you sure?</p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setShowDeleteConfirm(false)}
-                      className="flex-1 py-2 text-xs bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleDeleteAll}
-                      className="flex-1 py-2 text-xs bg-red-500 hover:bg-red-400 text-white rounded-lg transition-colors"
-                    >
-                      Delete Everything
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="w-full text-xs text-slate-500 hover:text-red-400 transition-colors"
-                >
-                  Delete all my data
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    <main className="portfolio-page">
+      <header className="workspace-top"><div className="brand"><span className="brand-mark" aria-hidden="true">↗</span> AI Startup Simulator</div><button onClick={logout} className="secondary">Sign out</button></header>
+      <div className="portfolio-title"><div className="eyebrow">Founder portfolio / {user?.username}</div><h1>Your next big idea starts here.</h1><p>Return to a company in progress, or build something new.</p></div>
+      <section className="panel">
+        <div className="panel-heading"><div><h2>Your companies</h2><p>{games.length} saved ventures</p></div><button className="primary" onClick={onNewGame}>+ New company</button></div>
+        {loading ? <p role="status" className="empty-state text-muted">Loading your companies…</p> : games.length === 0 ? <div className="empty-state"><div className="eyebrow">A clean slate</div><h2>Every company starts with an idea.</h2><p>Your first venture is waiting to happen.</p><button className="primary" onClick={onNewGame}>Launch your first company ↗</button></div> : games.map((game, i) => <div className="saved-game" key={game.id}><span className="saved-game-number">{String(i + 1).padStart(2, '0')}</span><button onClick={() => onSelectGame(game.id)}><h3>{game.company_name}</h3><p>{game.industry} · Saved {new Date(game.updated_at).toLocaleDateString()}</p></button><button onClick={() => onSelectGame(game.id)} className="secondary" aria-label={`Continue ${game.company_name}`}>Continue →</button><button onClick={e => handleDelete(e, game.id)} className="text-xs text-danger p-2" aria-label={`Delete ${game.company_name}`}>Delete</button></div>)}
+      </section>
+      <div className="portfolio-tools"><div>{storageStats && <span>{storageStats.games} games · {storageStats.totalSize} · <button onClick={handleCleanup}>Clean up storage</button></span>}</div><label className="flex items-center gap-2"><input type="checkbox" checked={autoCleanup} onChange={e => setAutoCleanup(e.target.checked)} />Auto-cleanup preference</label></div>
+      {games.length > 0 && <div className="mt-6 text-xs text-muted">{showDeleteConfirm ? <div className="flex flex-wrap items-center gap-4"><span className="text-danger">Permanently delete all your game data?</span><button className="secondary" onClick={() => setShowDeleteConfirm(false)}>Cancel</button><button className="secondary text-danger" onClick={handleDeleteAll}>Delete everything</button></div> : <button onClick={() => setShowDeleteConfirm(true)}>Delete all my game data</button>}</div>}
+    </main>
   )
 }

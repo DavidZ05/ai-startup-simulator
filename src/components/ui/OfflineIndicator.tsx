@@ -29,21 +29,21 @@ export function OfflineIndicator() {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
         isOnline
-          ? 'bg-emerald-500/90 translate-y-0'
-          : 'bg-amber-500/90 translate-y-0'
+          ? 'bg-success-soft translate-y-0'
+          : 'bg-warning-soft translate-y-0'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-center gap-2">
         <span className="text-lg">{isOnline ? '✅' : '⚠️'}</span>
-        <span className="text-sm font-medium text-white">
+        <span className="text-sm font-medium text-ink">
           {isOnline ? 'Back online' : 'You are offline. Some features may be limited.'}
         </span>
         {!isOnline && (
           <button
             onClick={() => setShowBanner(false)}
-            className="ml-4 text-white/80 hover:text-white text-sm"
+            className="ml-4 text-ink/80 hover:text-ink text-sm"
           >
             Dismiss
           </button>

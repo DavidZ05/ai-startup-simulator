@@ -14,24 +14,24 @@ export function MarketPanel({ company, onExpand }: MarketPanelProps) {
   const progress = Math.round((unlockedMarkets.length / MARKETS.length) * 100)
 
   return (
-    <div className="bg-[#1e1e3a]/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 shadow-xl">
+    <div className="panel">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-lg">🌍</span>
-          <h3 className="text-sm font-bold text-white">Markets</h3>
+          <h3 className="text-lg font-semibold text-ink">Markets</h3>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-16 h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
+          <div className="w-16 h-1.5 bg-paper rounded-full overflow-hidden">
             <div
-              className="h-full bg-cyan-500 rounded-full transition-all duration-500"
+              className="h-full bg-success rounded-full transition-colors duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="text-[10px] text-slate-400">{unlockedMarkets.length}/{MARKETS.length}</span>
+          <span className="text-xs text-muted">{unlockedMarkets.length}/{MARKETS.length}</span>
         </div>
       </div>
 
-      <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+      <div className="space-y-1.5 max-h-80 overflow-y-auto pr-1">
         {MARKETS.map(market => {
           const isUnlocked = unlockedMarkets.includes(market.id)
           const isAvailable = available.some(a => a.id === market.id)
@@ -45,34 +45,28 @@ export function MarketPanel({ company, onExpand }: MarketPanelProps) {
           return (
             <div
               key={market.id}
-              onClick={() => setSelectedMarket(isSelected ? null : market.id)}
-              className={`p-2 rounded-lg border cursor-pointer transition-all ${
-                isUnlocked
-                  ? 'bg-emerald-500/10 border-emerald-500/30'
-                  : isAvailable && canAfford && meetsRequirements
-                  ? 'bg-indigo-500/10 border-indigo-500/30 hover:bg-indigo-500/20'
-                  : isAvailable
-                  ? 'bg-slate-800/30 border-slate-600/30 opacity-60'
-                  : 'bg-slate-800/20 border-slate-700/20 opacity-30'
-              }`}
+              className="management-row"
+
             >
+              <button type="button" aria-expanded={isSelected} onClick={() => setSelectedMarket(isSelected ? null : market.id)} className="management-trigger">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 flex items-center justify-center overflow-hidden">
-                    <span className="text-sm origin-center group-hover:scale-[1.4] transition-transform duration-200">{market.emoji}</span>
+                    <span className="text-sm origin-center transition-transform duration-200">{market.emoji}</span>
                   </div>
-                  <span className="text-xs font-medium text-white">{market.name}</span>
+                  <span className="text-sm font-medium text-ink">{market.name}</span>
                 </div>
                 {isUnlocked ? (
-                  <span className="text-[10px] text-emerald-400">✓</span>
+                  <span className="text-xs text-success">✓</span>
                 ) : (
-                  <span className="text-[10px] text-slate-400">${market.cost.toLocaleString()}</span>
+                  <span className="text-xs text-muted">${market.cost.toLocaleString()}</span>
                 )}
               </div>
+              </button>
 
               {isSelected && !isUnlocked && (
-                <div className="mt-2 pt-2 border-t border-slate-700/30">
-                  <p className="text-[10px] text-slate-400 mb-2">{market.description}</p>
+                <div className="mt-2 pt-2 border-t border-rule">
+                  <p className="text-xs text-muted mb-2">{market.description}</p>
                   {isAvailable ? (
                     <button
                       onClick={(e) => {
@@ -80,16 +74,16 @@ export function MarketPanel({ company, onExpand }: MarketPanelProps) {
                         if (canAfford && meetsRequirements) onExpand(market.id, market.cost)
                       }}
                       disabled={!canAfford || !meetsRequirements}
-                      className={`w-full py-1 text-[10px] rounded ${
+                      className={`w-full py-2 text-sm rounded ${
                         canAfford && meetsRequirements
-                          ? 'bg-indigo-500 hover:bg-indigo-400 text-white'
-                          : 'bg-slate-700 text-slate-400'
+                          ? 'bg-accent text-on-accent'
+                          : 'bg-paper text-muted'
                       }`}
                     >
                       {!canAfford ? 'Not enough funds' : !meetsRequirements ? 'Requirements not met' : 'Expand'}
                     </button>
                   ) : (
-                    <p className="text-[10px] text-amber-400">
+                    <p className="text-xs text-warning">
                       Requires: {market.unlockRequirement?.users ? `Users ≥ ${market.unlockRequirement.users}` : ''}
                       {market.unlockRequirement?.product ? `, Product ≥ ${market.unlockRequirement.product}` : ''}
                     </p>

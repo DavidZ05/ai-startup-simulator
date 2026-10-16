@@ -9,4 +9,4 @@ COPY server/ ./server/
 
 EXPOSE 3001
 
-CMD ["cd", "server", "&&", "npm", "run", "dev"]
+CMD ["sh", "-c", "cd server && npm run dev"]

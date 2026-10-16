@@ -677,3 +677,54 @@ The decision engine supports three advanced mechanisms:
 - Sound triggers: click, select, confirm, success, error, event, achievement, levelUp, coin, notification
 - Volume persistence in localStorage
 - Audio controls in bottom-right corner
+
+
+## UI system — 创业作战室 (2026-10-13)
+
+Approved scope: redesign all screens in place; retain game rules, auth and persistence.
+Genre: modern-minimal. Theme: warm paper, ink sidebar, restrained burnt-orange accent.
+Macrostructures: split entrance (auth), portfolio list (saves), guided launch (creation), workbench (game), review sheet (reports/end).
+Typography: local Avenir Next / Helvetica Neue sans with tabular numbers; no external font requests.
+Tokens: `tokens.css`; shared composition: `src/redesign.css`.
+Decision log: choose workbench over terminal and pixel themes to prioritize readable decisions and operating metrics. Use anchored navigation and show all management sections so purchases stay discoverable.
+Assumptions: existing single-player workload; no new data collection or backend contracts; mobile support; existing reliability requirements; React/Tailwind maintained.
+Motion: short color transitions only; visible keyboard focus; respect reduced motion.
+Validation: TypeScript, lint, build, existing engine tests, desktop/mobile browser review.
+
+### UI token exports
+
+The complete portable CSS tokens live in `tokens.css`; Tailwind v4 aliases live in `src/redesign.css`.
+
+```css
+/* Plain CSS */
+@import "./tokens.css";
+/* Tailwind v4 */
+@theme inline {
+  --color-paper: var(--color-paper);
+  --color-ink: var(--color-ink);
+  --color-accent: var(--color-accent);
+  --font-display: var(--font-display);
+}
+/* shadcn-compatible aliases */
+:root {
+  --background: var(--color-paper);
+  --foreground: var(--color-ink);
+  --primary: var(--color-accent);
+  --primary-foreground: var(--color-on-accent);
+  --muted: var(--color-paper);
+  --muted-foreground: var(--color-muted);
+  --border: var(--color-rule);
+  --ring: var(--color-accent);
+  --radius: var(--radius-input);
+}
+```
+
+```json
+{
+  "paper": { "$value": "#f6f5f1", "$type": "color" },
+  "surface": { "$value": "#fffefa", "$type": "color" },
+  "ink": { "$value": "#242823", "$type": "color" },
+  "accent": { "$value": "#b94721", "$type": "color" },
+  "rule": { "$value": "#dedfd6", "$type": "color" }
+}
+```

@@ -1,0 +1,33 @@
+/* Hallmark · macrostructure: Workbench · tone: purposeful · anchor hue: burnt orange */
+/* Hallmark · pre-emit critique: P4 H5 E4 S4 R5 V5 */
+:root {
+  --color-paper: #f6f5f1;
+  --color-surface: #fffefa;
+  --color-ink: #242823;
+  --color-muted: #697068;
+  --color-rule: #dedfd6;
+  --color-accent: #b94721;
+  --color-accent-soft: #faeee5;
+  --color-on-accent: #fffefa;
+  --color-sidebar: #222922;
+  --color-sidebar-muted: #adb5a8;
+  --color-sidebar-hover: #343e33;
+  --color-success: #346447;
+  --color-success-soft: #edf3e9;
+  --color-danger: #af3834;
+  --color-danger-soft: #f9eae7;
+  --color-warning: #865d1f;
+  --color-warning-soft: #f8f0df;
+  --color-overlay: #22292299;
+  --font-display: 'Avenir Next', 'Helvetica Neue', sans-serif;
+  --font-body: 'Avenir Next', 'Helvetica Neue', 'PingFang SC', sans-serif;
+  --font-mono: 'SFMono-Regular', Consolas, monospace;
+  --space-3xs: 4px; --space-2xs: 8px; --space-xs: 12px;
+  --space-sm: 16px; --space-md: 24px; --space-lg: 32px;
+  --space-xl: 48px; --space-2xl: 64px; --space-3xl: 96px;
+  --text-xs: 12px; --text-sm: 14px; --text-md: 16px;
+  --text-lg: 20px; --text-xl: 28px; --text-2xl: 40px;
+  --text-display: clamp(40px, 5vw, 76px);
+  --radius-card: 12px; --radius-input: 8px; --radius-pill: 100px;
+  --rule-thin: 1px; --dur-short: 160ms; --ease-out: ease-out;
+}

@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "../tokens.css";
+@import "./redesign.css";
 
 :root {
   --color-primary: #6366f1;
@@ -9,10 +11,8 @@
   --color-danger: #ef4444;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 }
 
 body {
@@ -73,3 +73,7 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #6a6a8a;
 }
+/* Preserve the original entry and load the redesigned base after legacy rules. */
+body { font-family: var(--font-body); background: var(--color-paper); color: var(--color-ink); }
+
+:root { --color-primary: var(--color-accent); --color-primary-light: var(--color-accent-soft); --color-accent: #b94721; --color-success: #346447; --color-warning: #865d1f; --color-danger: #af3834; }

@@ -71,18 +71,18 @@ export function AudioControls() {
   const { isPlaying, volume, toggle, setVolume } = useAudio()
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 bg-[#12122a]/90 backdrop-blur-xl rounded-xl border border-white/10 p-2 shadow-2xl">
+    <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 bg-surface rounded-xl border border-rule p-2">
       <button
         onClick={toggle}
-        className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+        className="w-8 h-8 flex items-center justify-center rounded-lg bg-paper hover:bg-paper transition-colors"
         title={isPlaying ? 'Pause music' : 'Play music'}
       >
         {isPlaying ? (
-          <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-4 h-4 text-ink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         ) : (
-          <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -95,7 +95,7 @@ export function AudioControls() {
           max="100"
           value={volume * 100}
           onChange={(e) => setVolume(parseInt(e.target.value) / 100)}
-          className="w-16 h-1 bg-slate-700 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-indigo-500 [&::-webkit-slider-thumb]:rounded-full"
+          className="w-16 h-1 bg-paper rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-accent-soft [&::-webkit-slider-thumb]:rounded-full"
         />
       </div>
     </div>

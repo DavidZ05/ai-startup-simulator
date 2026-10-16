@@ -12,41 +12,43 @@ export function AchievementsPanel({ company }: AchievementsProps) {
   const progress = Math.round((unlockedCount / total) * 100)
 
   return (
-    <div className="bg-[#1e1e3a]/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 shadow-xl">
+    <div className="panel">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-lg">🏆</span>
-          <h3 className="text-sm font-bold text-white">Achievements</h3>
+          <h3 className="text-lg font-semibold text-ink">Achievements</h3>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-16 h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
+          <div className="w-16 h-1.5 bg-paper rounded-full overflow-hidden">
             <div
-              className="h-full bg-amber-500 rounded-full transition-all duration-500"
+              className="h-full bg-warning-soft rounded-full transition-colors duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="text-[10px] text-slate-400">{unlockedCount}/{total}</span>
+          <span className="text-xs text-muted">{unlockedCount}/{total}</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1.5">
+      <div className="grid grid-cols-4 gap-1.5">
         {ACHIEVEMENTS.map(achievement => {
           const isUnlocked = unlocked.includes(achievement.id)
           return (
             <div
               key={achievement.id}
-              className={`relative group p-1.5 rounded-lg text-center transition-all duration-200 ${
+              className={`relative group p-1.5 rounded-lg text-center transition-colors duration-200 ${
                 isUnlocked
-                  ? 'bg-amber-500/15 border border-amber-500/40 shadow-lg shadow-amber-500/10'
-                  : 'bg-slate-800/30 border border-slate-700/20 opacity-30 hover:opacity-50'
+                  ? 'bg-warning-soft border border-warning-soft  '
+                  : 'bg-paper border border-rule opacity-50 hover:opacity-50'
               }`}
               title={`${achievement.name}: ${achievement.description}`}
+              tabIndex={0}
+              aria-label={`${achievement.name}: ${achievement.description}. ${isUnlocked ? 'Unlocked' : 'Locked'}`}
             >
-              <div className="w-6 h-6 flex items-center justify-center overflow-hidden">
-                <div className="text-sm origin-center group-hover:scale-[1.4] transition-transform duration-200">{achievement.emoji}</div>
+              <div className="w-full h-8 flex items-center justify-center overflow-hidden">
+                <div className="text-lg">{achievement.emoji}</div>
               </div>
               {isUnlocked && (
-                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-[#1e1e3a]" />
+                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-success-soft border border-surface" />
               )}
             </div>
           )

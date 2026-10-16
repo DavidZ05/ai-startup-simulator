@@ -1,3 +1,5 @@
+import type { Company, Decision, MonthResult } from '../types/game'
+
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
 class ApiClient {
@@ -88,6 +90,27 @@ class ApiClient {
     })
   }
 
+  /**
+   * 服务端权威回合结算：只提交 decision ids（含完整对象也行，
+   * 服务端仅读取 id 并从自己的配置重建效果），返回结算后的 MonthResult。
+   */
+  async processTurn(gameId: number, decisions: Decision[]) {
+    return this.request<MonthResult>(`/games/${gameId}/turn`, {
+      method: 'POST',
+      body: JSON.stringify({ decisions }),
+    })
+  }
+
+  /**
+   * 服务端权威购买结算：科技/市场/雇员统一入口，只提交 type + id。
+   */
+  async purchase(gameId: number, type: 'tech' | 'market' | 'employee', id: string) {
+    return this.request<{ success: boolean; company: Company }>(`/games/${gameId}/purchase`, {
+      method: 'POST',
+      body: JSON.stringify({ type, id }),
+    })
+  }
+
   async saveGameHistory(gameId: number, month: number, stateSnapshot: unknown, decisions: unknown[], events: unknown[]) {
     return this.request<{ success: boolean }>(`/games/${gameId}/history`, {
       method: 'POST',
@@ -133,10 +156,10 @@ class ApiClient {
     return this.request<Array<{ id: number; username: string; company_name: string; score: number; result: string; months_played: number; created_at: string }>>(`/leaderboard${query}`)
   }
 
-  async submitScore(gameId: number, companyName: string, score: number, result: string, monthsPlayed: number) {
-    return this.request<{ success: boolean }>('/leaderboard', {
+  async submitScore(gameId: number, result: 'success' | 'fail') {
+    return this.request<{ success: boolean; score: number }>('/leaderboard', {
       method: 'POST',
-      body: JSON.stringify({ gameId, companyName, score, result, monthsPlayed }),
+      body: JSON.stringify({ gameId, result }),
     })
   }
 

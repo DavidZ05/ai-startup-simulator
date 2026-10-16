@@ -61,10 +61,10 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0f0f23]">
+      <div className="min-h-screen flex items-center justify-center bg-surface">
         <div className="text-center">
           <div className="text-4xl mb-4 animate-bounce">🚀</div>
-          <p className="text-slate-400">Loading...</p>
+          <p className="text-muted">Loading...</p>
         </div>
       </div>
     )

@@ -1,10 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { useGameContext } from '../../context/GameContext'
-import { processMonth } from '../../engine/processor'
-import { applyEffects } from '../../engine/calculator'
-import { TECH_TREE } from '../../config/techTree'
-import { MARKETS } from '../../config/markets'
-import { EMPLOYEE_ROLES } from '../../config/employees'
 import { sounds } from '../../utils/sounds'
 import { Dashboard } from './Dashboard'
 import { DecisionPanel } from './DecisionPanel'
@@ -21,7 +16,7 @@ import { GameErrorBoundary } from '../ui/GameErrorBoundary'
 import type { Decision, QuarterlyReport } from '../../types/game'
 
 export function GameBoard() {
-  const { state, dispatch, saveGame } = useGameContext()
+  const { state, dispatch, saveGame, decide, buyTech, expandMarket, hireEmployee } = useGameContext()
   const { company, currentReport, currentEvent, turn, processing } = state
   const [quarterlyReport, setQuarterlyReport] = useState<QuarterlyReport | null>(null)
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -52,73 +47,22 @@ export function GameBoard() {
 
   const handleDecide = (decisions: Decision[]) => {
     if (!company) return
-
-    dispatch({ type: 'PROCESS_MONTH', decisions })
-
-    setTimeout(() => {
-      const result = processMonth(company, decisions, state.history)
-      dispatch({ type: 'MONTH_PROCESSED', result })
-
-      if (result.endCondition) {
-        setTimeout(() => {
-          dispatch({ type: 'END_GAME', result: result.endCondition!, company: result.state })
-        }, 500)
-      }
-    }, 800)
+    decide(decisions)
   }
 
-  const handleUnlockTech = (techId: string, cost: number) => {
-    if (!company || company.funds < cost) return
-
-    const tech = TECH_TREE.find(t => t.id === techId)
-    if (!tech) return
-
-    sounds.levelUp()
-
-    const newState = {
-      ...company,
-      funds: company.funds - cost,
-      unlockedTech: [...(company.unlockedTech || []), techId],
-    }
-
-    const updatedCompany = applyEffects(newState, tech.effects)
-    dispatch({ type: 'LOAD_GAME', state: { ...state, company: updatedCompany } })
+  const handleUnlockTech = (techId: string) => {
+    if (!company) return
+    buyTech(techId)
   }
 
-  const handleExpandMarket = (marketId: string, cost: number) => {
-    if (!company || company.funds < cost) return
-
-    const market = MARKETS.find(m => m.id === marketId)
-    if (!market) return
-
-    sounds.success()
-
-    const newState = {
-      ...company,
-      funds: company.funds - cost,
-      unlockedMarkets: [...(company.unlockedMarkets || []), marketId],
-    }
-
-    const updatedCompany = applyEffects(newState, market.effects)
-    dispatch({ type: 'LOAD_GAME', state: { ...state, company: updatedCompany } })
+  const handleExpandMarket = (marketId: string) => {
+    if (!company) return
+    expandMarket(marketId)
   }
 
-  const handleHireEmployee = (employeeId: string, cost: number) => {
-    if (!company || company.funds < cost) return
-
-    const employee = EMPLOYEE_ROLES.find(e => e.id === employeeId)
-    if (!employee) return
-
-    sounds.coin()
-
-    const newState = {
-      ...company,
-      funds: company.funds - cost,
-      employees: [...(company.employees || []), employeeId],
-    }
-
-    const updatedCompany = applyEffects(newState, employee.effects)
-    dispatch({ type: 'LOAD_GAME', state: { ...state, company: updatedCompany } })
+  const handleHireEmployee = (employeeId: string) => {
+    if (!company) return
+    hireEmployee(employeeId)
   }
 
   const handleGoPublic = () => {
@@ -164,97 +108,35 @@ export function GameBoard() {
   const techCount = company.unlockedTech?.length || 0
 
   return (
-    <div className="min-h-screen bg-[#0a0a1a]">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-indigo-500/5 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative bg-[#12122a]/80 backdrop-blur-2xl border-b border-white/5 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                <span className="text-xs sm:text-sm">🚀</span>
-              </div>
-              <div className="text-sm sm:text-lg font-black bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-                {company.name}
-              </div>
-            </div>
-            <div className="hidden md:flex items-center gap-1.5">
-              {[
-                { icon: '🌍', value: marketCount },
-                { icon: '👥', value: employeeCount },
-                { icon: '🌳', value: techCount },
-              ].map((stat, i) => (
-                <div key={i} className="flex items-center gap-1 px-2 py-1 bg-white/5 rounded-lg border border-white/5">
-                  <span className="text-[10px]">{stat.icon}</span>
-                  <span className="text-[10px] font-semibold text-slate-400">{stat.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <div className="text-[9px] text-slate-500 uppercase tracking-widest">Month</div>
-              <div className="text-sm font-bold text-white">{currentMonthName} Y{currentYear}</div>
-            </div>
-            <div className="w-px h-8 bg-white/10" />
-            <div className="text-right">
-              <div className="text-[9px] text-slate-500 uppercase tracking-widest">Round</div>
-              <div className="text-sm font-bold text-indigo-400">{turn}</div>
-            </div>
+    <div className="workbench">
+      <aside className="sidebar">
+        <div className="brand"><span className="brand-mark" aria-hidden="true">↗</span><span>Startup<br />Simulator</span></div>
+        <nav aria-label="Company navigation">
+          {[
+            ['overview', '01', 'Overview'], ['decisions', '02', 'Decisions'],
+            ['technology', '03', 'Technology'], ['markets', '04', 'Markets'],
+            ['team', '05', 'Team'], ['milestones', '06', 'Milestones'], ['exit', '07', 'Exit strategy'],
+          ].map(([id, number, label]) => <a href={`#${id}`} key={id}><span>{number}</span>{label}</a>)}
+        </nav>
+        <div className="sidebar-bottom"><p>{company.name}</p><p>{company.industry}</p><p className="mt-4">One month. One move forward.</p></div>
+      </aside>
+      <main className="workspace" id="overview">
+        <header className="workspace-top"><div className="eyebrow">Company / {company.name}</div><span className="date-chip">{currentMonthName} · Year {currentYear} / Round {turn}</span></header>
+        <div className="workspace-intro"><div><div className="eyebrow">The founder’s workbench</div><h1>Make your next move.</h1><p>Your company at a glance. Put your resources where they matter.</p></div><span className="date-chip">{marketCount} markets · {employeeCount} hires · {techCount} technologies</span></div>
+        <GameErrorBoundary name="Dashboard"><Dashboard company={company} /></GameErrorBoundary>
+        <div className="operation-grid">
+          <section className="section-anchor" id="decisions"><GameErrorBoundary name="DecisionPanel"><DecisionPanel company={company} onDecide={handleDecide} disabled={processing} /></GameErrorBoundary></section>
+          <div className="operation-aside">
+            <section className="section-anchor" id="milestones"><GameErrorBoundary name="Achievements"><AchievementsPanel company={company} /></GameErrorBoundary></section>
+            <section className="section-anchor" id="exit"><GameErrorBoundary name="IPO"><IPOPanel company={company} onAcceptOffer={handleAcceptOffer} onGoPublic={handleGoPublic} /></GameErrorBoundary></section>
           </div>
         </div>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-5">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5">
-          <div className="lg:col-span-3 space-y-3 lg:space-y-4">
-            <GameErrorBoundary name="Dashboard">
-              <Dashboard company={company} />
-            </GameErrorBoundary>
-            <div className="hidden lg:block">
-              <GameErrorBoundary name="Achievements">
-                <AchievementsPanel company={company} />
-              </GameErrorBoundary>
-            </div>
-            <div className="hidden lg:block">
-              <GameErrorBoundary name="Markets">
-                <MarketPanel company={company} onExpand={handleExpandMarket} />
-              </GameErrorBoundary>
-            </div>
-          </div>
-          <div className="lg:col-span-6">
-            <GameErrorBoundary name="DecisionPanel">
-              <DecisionPanel
-                company={company}
-                onDecide={handleDecide}
-                disabled={processing}
-              />
-            </GameErrorBoundary>
-            <div className="lg:hidden mt-4 space-y-3">
-              <GameErrorBoundary name="Achievements">
-                <AchievementsPanel company={company} />
-              </GameErrorBoundary>
-              <GameErrorBoundary name="Markets">
-                <MarketPanel company={company} onExpand={handleExpandMarket} />
-              </GameErrorBoundary>
-            </div>
-          </div>
-          <div className="lg:col-span-3 space-y-3 lg:space-y-4">
-            <GameErrorBoundary name="TechTree">
-              <TechTreePanel company={company} onUnlock={handleUnlockTech} />
-            </GameErrorBoundary>
-            <GameErrorBoundary name="Employees">
-              <EmployeePanel company={company} onHire={handleHireEmployee} />
-            </GameErrorBoundary>
-            <GameErrorBoundary name="IPO">
-              <IPOPanel company={company} onAcceptOffer={handleAcceptOffer} onGoPublic={handleGoPublic} />
-            </GameErrorBoundary>
-          </div>
+        <div className="management-grid">
+          <section className="section-anchor" id="technology"><GameErrorBoundary name="TechTree"><TechTreePanel company={company} onUnlock={handleUnlockTech} /></GameErrorBoundary></section>
+          <section className="section-anchor" id="markets"><GameErrorBoundary name="Markets"><MarketPanel company={company} onExpand={handleExpandMarket} /></GameErrorBoundary></section>
+          <section className="section-anchor" id="team"><GameErrorBoundary name="Employees"><EmployeePanel company={company} onHire={handleHireEmployee} /></GameErrorBoundary></section>
         </div>
-      </div>
+      </main>
 
       {currentReport && !quarterlyReport && (
         <GameErrorBoundary name="MonthlyReport">
