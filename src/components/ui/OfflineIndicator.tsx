@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 
 export function OfflineIndicator() {
   const [isOnline, setIsOnline] = useState(navigator.onLine)
-  const [showBanner, setShowBanner] = useState(false)
+  const [showBanner, setShowBanner] = useState(!navigator.onLine)
 
   useEffect(() => {
     const handleOnline = () => {
@@ -25,7 +25,7 @@ export function OfflineIndicator() {
     }
   }, [])
 
-  if (!showBanner && isOnline) return null
+  if (!showBanner) return null
 
   return (
     <div
@@ -38,7 +38,7 @@ export function OfflineIndicator() {
       <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-center gap-2">
         <span className="text-lg">{isOnline ? '✅' : '⚠️'}</span>
         <span className="text-sm font-medium text-ink">
-          {isOnline ? 'Back online' : 'You are offline. Some features may be limited.'}
+          {isOnline ? 'Back online' : 'You are offline. Reconnect before making decisions or purchases.'}
         </span>
         {!isOnline && (
           <button
@@ -51,23 +51,4 @@ export function OfflineIndicator() {
       </div>
     </div>
   )
-}
-
-export function useOnlineStatus() {
-  const [isOnline, setIsOnline] = useState(navigator.onLine)
-
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true)
-    const handleOffline = () => setIsOnline(false)
-
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
-
-    return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-    }
-  }, [])
-
-  return isOnline
 }

@@ -13,15 +13,16 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [volume, setVolumeState] = useState(() => {
     const saved = localStorage.getItem('bgm_volume')
-    return saved ? parseFloat(saved) : 0.3
+    const value = Number(saved ?? 0.3)
+    return Number.isFinite(value) ? Math.max(0,Math.min(1,value)) : 0.3
   })
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {
     const audio = new Audio('/audio/chill.wav')
     audio.loop = true
-    audio.volume = volume
-    audio.preload = 'auto'
+    audio.volume = 0.3
+    audio.preload = 'none'
     audioRef.current = audio
 
     return () => {
@@ -59,7 +60,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   )
 }
 
-export function useAudio() {
+function useAudio() {
   const context = useContext(AudioCtx)
   if (!context) {
     throw new Error('useAudio must be used within AudioProvider')
@@ -90,6 +91,7 @@ export function AudioControls() {
       </button>
       <div className="flex items-center gap-1">
         <input
+          aria-label="Music volume"
           type="range"
           min="0"
           max="100"

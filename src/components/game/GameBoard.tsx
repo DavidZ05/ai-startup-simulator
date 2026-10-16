@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { useGameContext } from '../../context/GameContext'
+import { useEffect, useState } from 'react'
+import { useGameContext } from '../../context/useGame'
 import { sounds } from '../../utils/sounds'
 import { Dashboard } from './Dashboard'
 import { DecisionPanel } from './DecisionPanel'
@@ -16,10 +16,9 @@ import { GameErrorBoundary } from '../ui/GameErrorBoundary'
 import type { Decision, QuarterlyReport } from '../../types/game'
 
 export function GameBoard() {
-  const { state, dispatch, saveGame, decide, buyTech, expandMarket, hireEmployee } = useGameContext()
+  const { state, dispatch, decide, buyTech, expandMarket, hireEmployee, exitGame, loadGame } = useGameContext()
   const { company, currentReport, currentEvent, turn, processing } = state
   const [quarterlyReport, setQuarterlyReport] = useState<QuarterlyReport | null>(null)
-  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (currentEvent) {
@@ -28,22 +27,6 @@ export function GameBoard() {
       return () => clearTimeout(timer)
     }
   }, [currentEvent, dispatch])
-
-  useEffect(() => {
-    if (company && !processing) {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
-      saveTimeoutRef.current = setTimeout(() => {
-        saveGame()
-      }, 1000)
-    }
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current)
-      }
-    }
-  }, [company, processing, saveGame])
 
   const handleDecide = (decisions: Decision[]) => {
     if (!company) return
@@ -65,24 +48,8 @@ export function GameBoard() {
     hireEmployee(employeeId)
   }
 
-  const handleGoPublic = () => {
-    if (!company || !company.ipoReady) return
-    sounds.success()
-    dispatch({ type: 'END_GAME', result: { type: 'success', reason: '📈 IPO successful! Your startup is now publicly traded!' }, company })
-  }
-
-  const handleAcceptOffer = (offerId: string) => {
-    if (!company) return
-    const offer = company.acquisitionOffers?.find(o => o.id === offerId)
-    if (!offer) return
-    
-    sounds.achievement()
-    const acquiredCompany = {
-      ...company,
-      funds: company.funds + offer.amount,
-    }
-    dispatch({ type: 'END_GAME', result: { type: 'success', reason: `🤝 Acquired by ${offer.company} for $${offer.amount.toLocaleString()}!` }, company: acquiredCompany })
-  }
+  const handleGoPublic = () => { void exitGame('ipo') }
+  const handleAcceptOffer = (id:string) => { void exitGame('acquisition',id) }
 
   const handleCloseReport = () => {
     if (company?.lastQuarterReport) {
@@ -124,6 +91,8 @@ export function GameBoard() {
         <header className="workspace-top"><div className="eyebrow">Company / {company.name}</div><span className="date-chip">{currentMonthName} · Year {currentYear} / Round {turn}</span></header>
         <div className="workspace-intro"><div><div className="eyebrow">The founder’s workbench</div><h1>Make your next move.</h1><p>Your company at a glance. Put your resources where they matter.</p></div><span className="date-chip">{marketCount} markets · {employeeCount} hires · {techCount} technologies</span></div>
         <GameErrorBoundary name="Dashboard"><Dashboard company={company} /></GameErrorBoundary>
+        {state.error && <div role="alert" className="panel bg-danger-soft text-danger mb-6"><p>{state.error}</p><button className="secondary mt-3" disabled={processing} onClick={() => { if (state.gameId) void loadGame(state.gameId).catch(() => {}) }}>Reload company</button></div>}
+        <fieldset disabled={processing} className="game-actions">
         <div className="operation-grid">
           <section className="section-anchor" id="decisions"><GameErrorBoundary name="DecisionPanel"><DecisionPanel company={company} onDecide={handleDecide} disabled={processing} /></GameErrorBoundary></section>
           <div className="operation-aside">
@@ -136,6 +105,7 @@ export function GameBoard() {
           <section className="section-anchor" id="markets"><GameErrorBoundary name="Markets"><MarketPanel company={company} onExpand={handleExpandMarket} /></GameErrorBoundary></section>
           <section className="section-anchor" id="team"><GameErrorBoundary name="Employees"><EmployeePanel company={company} onHire={handleHireEmployee} /></GameErrorBoundary></section>
         </div>
+        </fieldset>
       </main>
 
       {currentReport && !quarterlyReport && (

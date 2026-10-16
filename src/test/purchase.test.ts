@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { purchase, computeScore, type SavedGameState } from '../../server/gameEngine'
+import { purchase, computeScore, type SavedGameState } from '../engine/actions'
 import type { Company } from '../types/game'
 
 function makeCompany(overrides: Partial<Company> = {}): Company {

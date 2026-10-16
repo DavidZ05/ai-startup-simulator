@@ -4,8 +4,8 @@
   "description": "A turn-based business simulation game",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f0f23",
-  "theme_color": "#6366f1",
+  "background_color": "#f6f5f1",
+  "theme_color": "#b94721",
   "icons": [
     {
       "src": "/favicon.svg",

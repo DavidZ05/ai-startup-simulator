@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth } from '../../context/useAuth'
 
 export function LoginForm() {
   const { login, register } = useAuth()
@@ -44,7 +44,7 @@ export function LoginForm() {
         <p className="text-sm text-muted">{isRegister ? 'Create an account to begin your startup journey.' : 'Sign in to pick up where you left off.'}</p>
         <form onSubmit={handleSubmit}>
           <div className="field"><label htmlFor="username">Username</label><input id="username" autoComplete="username" value={username} onChange={e => setUsername(e.target.value)} placeholder="Your founder name" minLength={3} required /></div>
-          <div className="field"><label htmlFor="password">Password</label><input id="password" type="password" autoComplete={isRegister ? 'new-password' : 'current-password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 6 characters" minLength={6} required /></div>
+          <div className="field"><label htmlFor="password">Password</label><input id="password" type="password" autoComplete={isRegister ? 'new-password' : 'current-password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 8 characters" minLength={isRegister ? 8 : 1} required /></div>
           {error && <p role="alert" className="mt-4 text-sm text-danger">{error}</p>}
           <button type="submit" className="primary" disabled={loading}>{loading ? 'Please wait…' : isRegister ? 'Create your account ↗' : 'Enter your workspace ↗'}</button>
         </form>

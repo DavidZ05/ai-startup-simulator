@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { settleTurn, type SavedGameState } from '../../server/gameEngine'
+import { settleTurn, type SavedGameState } from '../engine/actions'
 import type { Company } from '../types/game'
 
 function makeCompany(overrides: Partial<Company> = {}): Company {
@@ -123,5 +123,19 @@ describe('settleTurn 正常结算', () => {
     expect(['success', 'fail', null]).toEqual(
       expect.arrayContaining([r.result.endCondition?.type ?? null]),
     )
+  })
+})
+
+describe('settleTurn rejects unavailable actions', () => {
+  it('rejects a decision whose requirements are not met instead of burning a turn', () => {
+    const state = makeSavedState()
+    expect(settleTurn(state,[{id:'fundraising'}]).ok).toBe(false)
+    expect(state.company?.month).toBe(1)
+  })
+  it('does not mutate a previous snapshot’s cooldowns', () => {
+    const company = makeCompany({month:5,users:60,product:60,cooldowns:{}})
+    const saved = {company,history:[company],turn:5}
+    expect(settleTurn(saved,[{id:'fundraising'}]).ok).toBe(true)
+    expect(company.cooldowns).toEqual({})
   })
 })

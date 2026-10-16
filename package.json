@@ -12,7 +12,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p server/tsconfig.json",
+    "check": "npm run typecheck && npm run lint && npm test && npm run build && npm run build:server"
   },
   "dependencies": {
     "react": "^19.2.7",

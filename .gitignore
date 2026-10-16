@@ -33,3 +33,8 @@ data/
 *.njsproj
 *.sln
 *.sw?
+
+# Local agent memory and generated previews
+.workbuddy/
+artifacts/
+.hallmark/

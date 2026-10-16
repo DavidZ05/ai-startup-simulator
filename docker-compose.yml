@@ -1,27 +1,12 @@
-version: '3.8'
-
 services:
-  server:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  game:
+    build: .
     ports:
-      - "3001:3001"
-    volumes:
-      - ./data:/app/data
-      - ./server/.env:/app/server/.env
+      - "${PORT:-3001}:3001"
     environment:
-      - NODE_ENV=development
-    restart: unless-stopped
-
-  frontend:
-    image: node:20-alpine
-    working_dir: /app
-    ports:
-      - "5173:5173"
+      JWT_SECRET: "${JWT_SECRET:?Set JWT_SECRET to a random secret of at least 32 characters}"
+      CORS_ORIGIN: "${CORS_ORIGIN:-http://localhost:3001}"
+      AUTO_CLEANUP: "false"
     volumes:
-      - .:/app
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
-    depends_on:
-      - server
+      - ./server/data:/app/data
     restart: unless-stopped

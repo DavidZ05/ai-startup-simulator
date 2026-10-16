@@ -131,3 +131,6 @@ p { line-height: 1.65; }
 }
 
 .panel-heading .date-chip { flex-shrink:0; white-space:nowrap; }
+
+.game-actions { min-width:0; border:0; }
+.game-actions:disabled { opacity:.7; }

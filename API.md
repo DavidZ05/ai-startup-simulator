@@ -1,68 +1,49 @@
-# API Endpoints
+# API
 
-Base URL: `http://localhost:3001/api`
+All paths begin with `/api`. Responses are JSON. Protected routes require `Authorization: Bearer <token>`. API responses are never cached.
 
-## Auth
+## Authentication
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/auth/register | Create account |
-| POST | /api/auth/login | Login |
-| GET | /api/auth/me | Get current user |
+| Method | Path | Body / result |
+| --- | --- | --- |
+| POST | `/auth/register` | `{username,password}` → 201 `{token,user}` |
+| POST | `/auth/login` | `{username,password}` → `{token,user}` |
+| GET | `/auth/me` | Current user |
+| GET | `/health` | Public health status |
 
-## Games
+Registration: username 3–32 characters after trimming; password at least 8 characters and at most 72 UTF-8 bytes. Tokens expire after 7 days. No fixed test credentials are included.
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/games | List user's games |
-| POST | /api/games | Create new game |
-| GET | /api/games/:id | Get game state |
-| PUT | /api/games/:id | Update game state |
-| DELETE | /api/games/:id | Delete game |
-| POST | /api/games/:id/history | Save month history |
-| GET | /api/games/:id/history | Get game history |
-| DELETE | /api/games/user/all | Delete all user data |
+## Games (authenticated)
 
-## AI
+| Method | Path | Contract |
+| --- | --- | --- |
+| GET | `/games` | Current user’s saved-game summaries |
+| POST | `/games` | `{companyName,industry,targetUsers}` → 201 game record |
+| GET | `/games/:id` | Owned game with authoritative `state` |
+| POST | `/games/:id/turn` | `{decisions:[{id}],revision}` → monthly result plus `snapshot` |
+| POST | `/games/:id/purchase` | `{type,id,revision}`; type is `tech`, `market`, or `employee` → `{success,company,snapshot}` |
+| POST | `/games/:id/exit` | `{type,revision,offerId?}`; type is `ipo` or `acquisition` → `{success,snapshot}` |
+| GET | `/games/:id/history` | Owned game’s server-recorded turn history |
+| DELETE | `/games/:id` | Delete owned game and dependent history/ranking |
+| DELETE | `/games/user/all` | Delete current user’s games, history and ranking |
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/ai/report | Generate monthly report |
+Company name is 2–30 characters, target customers 2–50. Industry accepts a canonical ID or name from `src/config/decisions.ts`. Client economic state is ignored at creation.
 
-## Leaderboard
+`state` / `snapshot`: `{company,history,turn,revision,endCondition}`. `endCondition` is null during play and `{type,reason}` at completion. A game record also includes `id`, `company_name`, `industry`, `is_active`, and `updated_at`.
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/leaderboard | Get top scores |
-| POST | /api/leaderboard | Submit score |
-| GET | /api/leaderboard/my | Get user's scores |
+A mutation uses the revision in the last server snapshot. A successful mutation increments it once. After a timeout, reload the game before retrying; the server may already have applied the request. A stale request or mutation of an ended game returns 409. Unknown or unavailable actions return 400 with no state changes.
 
-## Storage
+`PUT /games/:id`, `POST /games/:id/history` and `POST /leaderboard` return 405: these are server-owned operations. Terminal scores are recorded automatically in the same transaction as the ending state. Acquisition amounts and IPO eligibility come from saved server state.
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/storage/stats | Get storage stats |
-| POST | /api/storage/cleanup | Cleanup old games |
+## Rankings and storage
 
-## Example Requests
+| Method | Path | Contract |
+| --- | --- | --- |
+| GET | `/leaderboard?limit=20` | Public rankings; limit clamped to 1–100 |
+| GET | `/leaderboard/my` | Authenticated user’s scores |
+| GET | `/storage/stats` | `{games,historyEntries,totalSize}` for current user’s serialized game data |
+| POST | `/storage/cleanup` | Remove only current user’s inactive games older than 90 days; `{success,deleted,message}` |
 
-### Register
-```bash
-curl -X POST http://localhost:3001/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"username":"player1","password":"pass123"}'
-```
+## Errors
 
-### Create Game
-```bash
-curl -X POST http://localhost:3001/api/games \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"companyName":"MyStartup","industry":"AI SaaS","state":{...}}'
-```
-
-### Get Storage Stats
-```bash
-curl http://localhost:3001/api/storage/stats \
-  -H "Authorization: Bearer YOUR_TOKEN"
-```
+`{error: string}` with 400 invalid input, 401 unauthenticated, 404 missing/not-owned game, 405 disabled write endpoint, 409 stale/ended game, 413 oversized body, 429 rate limit, or 500 unexpected server failure. Internal error details are logged on the server, not returned to the browser.

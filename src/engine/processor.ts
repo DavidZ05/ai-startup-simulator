@@ -127,7 +127,7 @@ function generateReport(
 }
 
 export function processMonth(state: Company, decisions: Decision[], history: Company[] = []): MonthResult {
-  let newState = { ...state }
+  let newState = { ...state, cooldowns: { ...state.cooldowns } }
 
   for (const decision of decisions) {
     const cost = getDecisionCost(decision, newState.funds)

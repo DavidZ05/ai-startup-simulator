@@ -1,7 +1,11 @@
-node_modules
-dist
-data
-.env
-server/.env
-*.log
+.git
+**/node_modules
+**/dist
+**/.env
+**/.env.*
+**/data
+**/*.db*
+.workbuddy
+.hallmark
+artifacts
 .DS_Store

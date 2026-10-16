@@ -1,38 +1,19 @@
-import { Request, Response, NextFunction } from 'express'
+import type { RequestHandler } from 'express'
 
-interface RateLimitEntry {
-  count: number
-  resetTime: number
-}
-
-const rateLimitMap = new Map<string, RateLimitEntry>()
-
-const WINDOW_MS = 60 * 1000
-const MAX_REQUESTS = 60
-
-export function rateLimiter(req: Request, res: Response, next: NextFunction) {
-  const ip = req.ip || req.socket.remoteAddress || 'unknown'
-  const now = Date.now()
-  const entry = rateLimitMap.get(ip)
-
-  if (!entry || now > entry.resetTime) {
-    rateLimitMap.set(ip, { count: 1, resetTime: now + WINDOW_MS })
-    return next()
-  }
-
-  if (entry.count >= MAX_REQUESTS) {
-    return res.status(429).json({ error: 'Too many requests. Please try again later.' })
-  }
-
-  entry.count++
-  next()
-}
-
-setInterval(() => {
-  const now = Date.now()
-  for (const [ip, entry] of rateLimitMap.entries()) {
-    if (now > entry.resetTime) {
-      rateLimitMap.delete(ip)
+// Per-app state, lazily pruned: no global interval or background handle.
+export function createRateLimiter(maxRequests = 120, windowMs = 60000): RequestHandler {
+  const entries = new Map<string,{count:number;reset:number}>()
+  return (req,res,next) => {
+    const now = Date.now()
+    for (const [ip,entry] of entries) if (now >= entry.reset) entries.delete(ip)
+    const key = req.ip || req.socket.remoteAddress || 'unknown'
+    const entry = entries.get(key) || {count:0,reset:now + windowMs}
+    if (entry.count >= maxRequests) {
+      res.set('Retry-After',String(Math.max(1,Math.ceil((entry.reset-now)/1000))))
+      return void res.status(429).json({error:'Too many requests. Please try again later.'})
     }
+    entry.count++
+    entries.set(key,entry)
+    next()
   }
-}, 60000)
+}

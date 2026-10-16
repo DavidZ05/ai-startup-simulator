@@ -1,23 +1,15 @@
-import Database, { type Database as DatabaseType } from 'better-sqlite3'
-import path from 'path'
-import fs from 'fs'
-import zlib from 'zlib'
+import Database from 'better-sqlite3'
+import path from 'node:path'
+import fs from 'node:fs'
+export type GameDatabase = Database.Database
 
-const DB_PATH = process.env.DATABASE_PATH || './data/game.db'
-
-const dir = path.dirname(DB_PATH)
-if (!fs.existsSync(dir)) {
-  fs.mkdirSync(dir, { recursive: true })
-}
-
-const db: DatabaseType = new Database(DB_PATH)
-
-db.pragma('journal_mode = WAL')
-db.pragma('foreign_keys = ON')
-db.pragma('cache_size = -8000')
-db.pragma('synchronous = NORMAL')
-
-db.exec(`
+export function createDatabase(filename: string): GameDatabase {
+  if (filename !== ':memory:') fs.mkdirSync(path.dirname(filename), { recursive: true })
+  const db = new Database(filename)
+  db.pragma('journal_mode = WAL')
+  db.pragma('foreign_keys = ON')
+  db.pragma('synchronous = NORMAL')
+  db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
@@ -66,55 +58,37 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_leaderboard_score ON leaderboard(score DESC);
 `)
 
-export function compressState(state: unknown): string {
-  const json = JSON.stringify(state)
-  const compressed = zlib.gzipSync(Buffer.from(json))
-  return compressed.toString('base64')
+  return db
 }
 
-export function decompressState(compressed: string): unknown {
-  const buffer = Buffer.from(compressed, 'base64')
-  const json = zlib.gunzipSync(buffer).toString()
-  return JSON.parse(json)
+// Explicitly delete children first so this works with databases created by older versions.
+export function deleteGame(db: GameDatabase, userId: number, gameId: number): boolean {
+  return db.transaction(() => {
+    const game = db.prepare('SELECT id FROM games WHERE id = ? AND user_id = ?').get(gameId, userId)
+    if (!game) return false
+    db.prepare('DELETE FROM leaderboard WHERE game_id = ?').run(gameId)
+    db.prepare('DELETE FROM game_history WHERE game_id = ?').run(gameId)
+    db.prepare('DELETE FROM games WHERE id = ? AND user_id = ?').run(gameId, userId)
+    return true
+  })()
 }
 
-export function cleanupOldGames(maxAgeDays: number = 90) {
-  const cutoff = new Date(Date.now() - maxAgeDays * 24 * 60 * 60 * 1000).toISOString()
-  db.prepare('DELETE FROM games WHERE updated_at < ? AND is_active = 0').run(cutoff)
-  db.prepare('DELETE FROM game_history WHERE game_id NOT IN (SELECT id FROM games)').run()
+export function deleteUserGameData(db: GameDatabase, userId: number) {
+  return db.transaction(() => {
+    db.prepare('DELETE FROM leaderboard WHERE user_id = ?').run(userId)
+    db.prepare('DELETE FROM game_history WHERE game_id IN (SELECT id FROM games WHERE user_id = ?)').run(userId)
+    db.prepare('DELETE FROM games WHERE user_id = ?').run(userId)
+  })()
 }
 
-export function deleteUserGameData(userId: number) {
-  const gameIds = db.prepare('SELECT id FROM games WHERE user_id = ?').all(userId) as any[]
-
-  if (gameIds.length > 0) {
-    const ids = gameIds.map(g => g.id)
-    db.prepare(`DELETE FROM game_history WHERE game_id IN (${ids.map(() => '?').join(',')})`).run(...ids)
-  }
-
-  db.prepare('DELETE FROM games WHERE user_id = ?').run(userId)
-  db.prepare('DELETE FROM leaderboard WHERE user_id = ?').run(userId)
+export function cleanupOldGames(db: GameDatabase, days = 90, userId?: number): number {
+  if (!Number.isInteger(days) || days < 1) throw new Error('Invalid retention period')
+  return db.transaction(() => {
+    const rows = db.prepare(`SELECT id, user_id FROM games
+      WHERE updated_at < datetime('now', ?) AND is_active = 0
+      AND (? IS NULL OR user_id = ?)`)
+      .all(`-${days} days`, userId ?? null, userId ?? null) as Array<{id:number;user_id:number}>
+    for (const row of rows) deleteGame(db, row.user_id, row.id)
+    return rows.length
+  })()
 }
-
-export function getDbSize(): { tables: Record<string, number>; totalSize: string } {
-  const tables: Record<string, number> = {}
-  const rows = db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all() as any[]
-
-  for (const row of rows) {
-    const count = db.prepare(`SELECT COUNT(*) as count FROM ${row.name}`).get() as any
-    tables[row.name] = count.count
-  }
-
-  const pageInfo = db.pragma('page_count') as any[]
-  const pageSize = db.pragma('page_size') as any[]
-  const sizeBytes = pageInfo[0].page_count * pageSize[0].page_size
-
-  let totalSize: string
-  if (sizeBytes < 1024) totalSize = `${sizeBytes} B`
-  else if (sizeBytes < 1024 * 1024) totalSize = `${(sizeBytes / 1024).toFixed(1)} KB`
-  else totalSize = `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB`
-
-  return { tables, totalSize }
-}
-
-export default db

@@ -5,8 +5,9 @@
   "type": "commonjs",
   "scripts": {
     "dev": "tsx index.ts",
-    "build": "tsc",
-    "start": "node dist/server/index.js"
+    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc",
+    "start": "node dist/server/index.js",
+    "cleanup": "tsx cleanup.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

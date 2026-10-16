@@ -1,12 +1,11 @@
-import { useGameContext } from '../../context/GameContext'
+import { useGameContext } from '../../context/useGame'
 import { INDUSTRIES } from '../../config/decisions'
 import { GAME_CONFIG } from '../../config/constants'
 import { sounds } from '../../utils/sounds'
-import type { Company } from '../../types/game'
 import { useState } from 'react'
 
 export function CreateCompany() {
-  const { newGame } = useGameContext()
+  const { newGame, state } = useGameContext()
   const [step, setStep] = useState(1)
   const [company, setCompany] = useState({
     name: '',
@@ -22,25 +21,7 @@ export function CreateCompany() {
 
   const handleStart = async () => {
     sounds.confirm()
-    const selectedIndustry = INDUSTRIES.find(i => i.id === company.industry)
-    const newCompany: Company = {
-      name: company.name,
-      industry: selectedIndustry?.name || company.industry,
-      targetUsers: company.targetUsers,
-      funds: GAME_CONFIG.INITIAL_FUNDS,
-      users: GAME_CONFIG.INITIAL_USERS,
-      revenue: 0,
-      teamMorale: GAME_CONFIG.INITIAL_MORALE,
-      product: GAME_CONFIG.INITIAL_PRODUCT,
-      marketHeat: GAME_CONFIG.INITIAL_HEAT,
-      competition: GAME_CONFIG.INITIAL_COMPETITION,
-      burnRate: GAME_CONFIG.INITIAL_BURN_RATE,
-      month: 1,
-      maxDecisions: GAME_CONFIG.MAX_DECISIONS_PER_ROUND,
-      fundraisingCount: 0,
-      cooldowns: {},
-    }
-    await newGame(newCompany)
+    await newGame({companyName:company.name,industry:company.industry,targetUsers:company.targetUsers})
   }
 
   return (
@@ -59,7 +40,8 @@ export function CreateCompany() {
             ['Starting runway', `${Math.floor(GAME_CONFIG.INITIAL_FUNDS / (GAME_CONFIG.INITIAL_BURN_RATE * GAME_CONFIG.BURN_COST_MULTIPLIER))} months`],
             ['Initial users', `${GAME_CONFIG.INITIAL_USERS}`],
           ].map(([label, value]) => <div key={label} className="flex justify-between gap-4 border-b border-rule pb-3"><dt className="text-muted">{label}</dt><dd className="font-medium text-right">{value}</dd></div>)}</dl></>}
-          <div className="launch-footer">{step > 1 ? <button className="secondary" onClick={() => { sounds.click(); setStep(step - 1) }}>← Back</button> : <span />}{step < 3 ? <button className="primary" disabled={!canProceed} onClick={() => { sounds.click(); setStep(step + 1) }}>Continue →</button> : <button className="primary" onClick={handleStart} disabled={!canProceed}>Launch company ↗</button>}</div>
+          {state.error && <p role="alert" className="text-sm text-danger mt-4">{state.error}</p>}
+          <div className="launch-footer">{step > 1 ? <button className="secondary" onClick={() => { sounds.click(); setStep(step - 1) }}>← Back</button> : <span />}{step < 3 ? <button className="primary" disabled={!canProceed || state.processing} onClick={() => { sounds.click(); setStep(step + 1) }}>Continue →</button> : <button className="primary" onClick={handleStart} disabled={!canProceed || state.processing}>{state.processing ? 'Creating…' : 'Launch company ↗'}</button>}</div>
           <p className="text-xs text-muted mt-6">1 round = 1 month · {GAME_CONFIG.MAX_DECISIONS_PER_ROUND} decisions per round</p>
         </section>
       </div>

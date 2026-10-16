@@ -1,10 +1,11 @@
-import { processMonth } from '../src/engine/processor'
-import { DECISIONS } from '../src/config/decisions'
-import { TECH_TREE } from '../src/config/techTree'
-import { MARKETS } from '../src/config/markets'
-import { EMPLOYEE_ROLES } from '../src/config/employees'
-import { applyEffects } from '../src/engine/calculator'
-import type { Company, Decision, DecisionEffect, MonthResult } from '../src/types/game'
+import { processMonth } from './processor'
+import { DECISIONS } from '../config/decisions'
+import { TECH_TREE } from '../config/techTree'
+import { MARKETS } from '../config/markets'
+import { EMPLOYEE_ROLES } from '../config/employees'
+import { applyEffects, getDecisionCost } from './calculator'
+import { canExecuteDecision } from './validator'
+import type { Company, Decision, DecisionEffect, MonthResult } from '../types/game'
 
 /**
  * 服务端回合结算（防作弊核心）。
@@ -66,6 +67,14 @@ export function settleTurn(savedState: unknown, requestedDecisions: unknown): Se
     }
     seen.add(id)
     decisions.push(canonical)
+  }
+
+  // Validate the complete plan in execution order before spending anything.
+  let planned = {...company, cooldowns:{...company.cooldowns}}
+  for (const decision of decisions) {
+    if (!canExecuteDecision(decision,planned)) return {ok:false,error:`Decision unavailable: ${decision.name}`}
+    planned = {...planned,funds:planned.funds-getDecisionCost(decision,planned.funds)}
+    planned = applyEffects(planned,{...decision.effects,...decision.dynamicEffect?.(planned)})
   }
 
   const history = Array.isArray(savedHistory) ? savedHistory : [company]
