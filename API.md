@@ -2,6 +2,8 @@
 
 All paths begin with `/api`. Responses are JSON. Protected routes require `Authorization: Bearer <token>`. API responses are never cached.
 
+During development, the frontend uses relative `/api` URLs through Vite on `127.0.0.1:5173` (or `localhost:5173`), which proxies to the backend on port 3001. In the production container, frontend and API share port 3001. For connection diagnostics, check `/api/health` through the frontend address as well as directly on the backend; see [README.md](README.md#frontendbackend-connection).
+
 ## Authentication
 
 | Method | Path | Body / result |

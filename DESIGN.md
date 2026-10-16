@@ -39,6 +39,8 @@ The frontend does not store economic snapshots in local storage or upload offlin
 
 ## Deployment
 
+Development binds the Vite frontend to IPv4 loopback `127.0.0.1`, avoiding a localhost/IPv6 listener mismatch. Browser requests use relative `/api` paths and are forwarded by Vite to port 3001, or to `VITE_PROXY_TARGET` when explicitly configured at startup. Both local processes must be running. Separate frontend origins have separate login storage.
+
 A multi-stage Node.js 24 image builds both applications and compiles the shared engine alongside the backend. The runtime contains only frontend output, server output and production server dependencies. It serves one origin, avoiding container-local browser API addresses and frontend/backend port mismatches. A persistent volume holds SQLite, and the runtime user is unprivileged.
 
 ## Presentation
